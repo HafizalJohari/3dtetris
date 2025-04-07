@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js" integrity="sha512-Siyxh4Wv/7aUNJTSrWpeBCkfBGqtqJDDvHywNMoq7Xq3gufdWbx0qIYr0T4D9zXGj2FXqQJ48YEoPChsCE7MAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
         :root { /* Define CSS Variables for UI Theming */
             --panel-bg: rgba(50, 50, 50, 0.85);
@@ -55,7 +55,7 @@
          #help-screen h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; text-align: center; }
          #help-screen h4 { font-size: 0.9rem; color: var(--text-color-heading); margin-top: 1.5rem; margin-bottom: 0.5rem; }
          #help-screen p, #help-screen li { margin-bottom: 0.5rem; color: var(--text-color); }
-         #help-screen ul { list-style: none; padding-left: 0; }
+         #help-screen ul { list-style: none; padding-left: 1rem; /* Indent list slightly */ }
          #help-screen code { background-color: rgba(0,0,0,0.3); padding: 0.1em 0.4em; border-radius: 4px; font-family: monospace; color: #facc15; }
          #close-help-button { margin-top: 2rem; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); display: block; margin-left: auto; margin-right: auto; }
          #close-help-button:hover { background-color: #2563eb; }
@@ -93,31 +93,12 @@
         .theme-button:hover { background-color: #3d4758; }
         .theme-button.active { background-color: var(--accent-color); border-color: var(--accent-color); font-weight: normal; }
 
-        /* --- Lighting Controls Styling FIX --- */
-         #lighting-controls label { display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 1em; line-height: 1.2; }
-         #lighting-controls div { margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
-         #lighting-controls label {
-             flex-basis: 35%; /* Reduced basis */
-             flex-shrink: 0;
-             margin-right: 0.5rem; /* Add margin after label */
-         }
-         #lighting-controls input[type="range"] {
-             flex-grow: 1; /* Allow slider to take space */
-             width: auto;
-             min-width: 0; /* Allow slider to shrink */
-             height: 8px; cursor: pointer; accent-color: var(--accent-color);
-             margin: 0; /* Remove horizontal margin */
-         }
-         #lighting-controls span {
-             display: inline-block;
-             min-width: 2.3em; /* Slightly reduced min-width */
-             text-align: right;
-             color: var(--text-color-heading);
-             font-size: 1em;
-             margin-left: 0.5rem; /* Add margin before value */
-         }
-        /* --- End Lighting Controls Styling FIX --- */
-
+        /* Lighting Controls Styling */
+        #lighting-controls label { display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 1em; line-height: 1.2; }
+        #lighting-controls div { margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+        #lighting-controls label { flex-basis: 35%; flex-shrink: 0; margin-right: 0.5rem; }
+        #lighting-controls input[type="range"] { flex-grow: 1; width: auto; min-width: 0; height: 8px; cursor: pointer; accent-color: var(--accent-color); margin: 0; }
+        #lighting-controls span { display: inline-block; min-width: 2.3em; text-align: right; color: var(--text-color-heading); font-size: 1em; margin-left: 0.5rem; }
 
         #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; }
         #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.2rem; text-align: center; display: none; z-index: 10; pointer-events: none; font-family: var(--font-display); line-height: 1.4; }
@@ -130,7 +111,6 @@
         <p>Construct the blueprints before the blocks pile up!</p>
         <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
         <button id="start-game-button">Continue</button>
-        <br> <p>Developed by SAFR+!</p>
     </div>
 
     <div id="main-menu-screen" class="overlay">
@@ -144,10 +124,10 @@
         <div id="help-screen-content">
             <h2>How to Play</h2>
             <h4>Goal</h4> <p>Complete the building blueprints for each mission. Falling blocks must be placed to fill the exact spots indicated by the semi-transparent 'ghost' blocks.</p>
-            <h4>Controls</h4> <ul> <li><code>W</code> / <code>S</code>: Move block Forward / Backward (Z-axis)</li> <li><code>A</code> / <code>D</code>: Move block Left / Right (X-axis)</li> <li><code>Spacebar</code>: Rotate block (Y-axis)</li> <li><code>ArrowDown</code>: Speed up block fall</li> <li><code>P</code>: Pause / Resume game</li> <li><code>R</code>: Return to Main Menu</li> <li><code>H</code>: Use AI Hint (see below)</li> <li>Mouse Drag: Rotate camera view</li> </ul>
+            <h4>Controls</h4> <ul> <li><code>W</code> / <code>S</code>: Move Forward / Backward</li> <li><code>A</code> / <code>D</code>: Move Left / Right</li> <li><code>Spacebar</code>: Rotate (Y-axis / Flat)</li> <li><code>Q</code> / <code>E</code>: Rotate (X-axis / Tumble)</li> <li><code>Z</code> / <code>C</code>: Rotate (Z-axis / Tilt)</li> <li><code>ArrowDown</code>: Speed Up Fall</li> <li><code>Tab</code>: Hard Drop</li> <li><code>P</code>: Pause / Resume</li> <li><code>R</code>: Return to Main Menu</li> <li><code>H</code>: Use AI Hint</li> <li>Mouse Drag: Rotate Camera</li> </ul>
             <h4>Gameplay</h4> <p>Use the controls to position the falling block. When a block lands on the ground or another block, it locks into place. If a locked block occupies a space shown in the blueprint, the corresponding ghost block will disappear. Complete the mission by filling all ghost block spots.</p>
             <h4>Scoring</h4> <ul> <li>+10 Points per cube locked.</li> <li>+50 Bonus points per cube locked in a correct blueprint spot.</li> <li>+500 Bonus points for completing a mission.</li> <li>Up to +1000 Time Bonus per mission based on speed.</li> <li>-200 Points penalty for using AI Hint.</li> </ul>
-            <h4>AI Hint</h4> <ul> <li>Shows the best calculated spot for the *next* piece.</li> <li>Target ghost blocks will blink for 5 seconds.</li> <li>Costs 200 points per use.</li> <li>Limited to 3 uses per game.</li> <li>Available only after placing 3 correct blocks in a mission.</li> <li>Activate with the 'H' key or the button.</li> </ul>
+            <h4>AI Hint</h4> <ul> <li>Shows the best calculated spot for the *next* piece (using Y-rotation only for now).</li> <li>Target ghost blocks will blink for 5 seconds.</li> <li>Costs 200 points per use.</li> <li>Limited to 3 uses per game.</li> <li>Available only after placing 3 correct blocks in a mission.</li> <li>Activate with the 'H' key or the button.</li> </ul>
             <h4>Other Features</h4> <ul> <li>Use the Theme buttons to change the visual style.</li> <li>Use the Lighting sliders to adjust the scene lighting.</li> </ul>
             <button id="close-help-button">Close</button>
         </div>
@@ -170,7 +150,7 @@
                  <div id="theme-selector" class="ui-panel"> <h3>Theme</h3> <button class="theme-button" data-theme="default">Default</button> <button class="theme-button" data-theme="milkyway">Stars</button> <button class="theme-button" data-theme="cyberpunk">Cyber</button> <button class="theme-button" data-theme="jungle">Jungle</button> <button class="theme-button" data-theme="town">Town</button> </div>
                  <div id="lighting-controls" class="ui-panel"> <h3>Lights</h3> <div><label for="hemi-intensity">Hemi:</label><input type="range" id="hemi-intensity" name="hemi-intensity" min="0" max="3" step="0.1"><span id="hemi-intensity-value">1.0</span></div> <div><label for="ambient-intensity">Amb:</label><input type="range" id="ambient-intensity" name="ambient-intensity" min="0" max="2" step="0.1"><span id="ambient-intensity-value">1.0</span></div> <div><label for="dir-intensity">Sun:</label><input type="range" id="dir-intensity" name="dir-intensity" min="0" max="5" step="0.1"><span id="dir-intensity-value">1.0</span></div> <div><label for="dir-y">Angle:</label><input type="range" id="dir-y" name="dir-y" min="1" max="30" step="1"><span id="dir-y-value">15</span></div> </div>
             </div>
-            <div id="controls-info" class="ui-panel"> <strong>Controls:</strong> WASD(Move), Space(Rotate), P, R(Menu), H(Hint) </div>
+            <div id="controls-info" class="ui-panel"> <strong>Controls:</strong> WASD, QE/ZC/Space(Rot), Tab(Drop), P, R, H </div>
         </div>
         <div id="message-box">Message</div>
     </div>
@@ -215,8 +195,9 @@
 
 
         // --- Audio ---
-        // ... (audio variables remain the same)
-        let synthMove, synthRotate, synthLock, synthCorrectLock, synthMissionComplete;
+        // ... (add hard drop synth)
+        let synthMove, synthRotate, synthRotateX, synthRotateZ, synthLock, synthCorrectLock, synthMissionComplete, synthHardDrop;
+        let backgroundMusicPlayer = null; // Added for background music
         let audioReady = false;
 
 
@@ -245,40 +226,32 @@
         function createPlaceholderSkybox(bC,tC,p=''){const s=256; return [`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PZ`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NZ`];}
 
         // --- Theme Definitions (with UI colors and updated Town skybox) ---
-        const themes = {
-            default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } },
-            milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } },
-            cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } },
-            jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } },
-            town: {
-                background: new THREE.Color(0x87CEEB), // Fallback sky blue
-                // Updated with actual GitHub raw URLs
-                skybox: [
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', // +X
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', // -X
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', // +Y
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', // -Y
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', // +Z
-                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png'  // -Z
-                ],
-                starfield: false,
-                fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, // Slightly adjusted fog
-                lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 },
-                groundColor: 0xbbbbbb,
-                ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' }
-             }
-        };
+        // ... (themes remain the same)
+        const themes = { default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } }, milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } }, cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } }, jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } }, town: { background: new THREE.Color(0x87CEEB), skybox: [ 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png' ], starfield: false, fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 }, groundColor: 0xbbbbbb, ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } } };
         let currentTheme = 'default';
 
-        // --- Mission Definitions --- (Shortened)
-        const missions = [ { name: "1", d:{x:4,y:1,z:4}, b: generateSolidBlueprint(4,1,4) }, { name: "2", d:{x:4,y:1,z:4}, b: generateWallBlueprint(4,1,4) }, { name: "3", d:{x:1,y:5,z:1}, b: generateSolidBlueprint(1,5,1) }, { name: "4", d:{x:4,y:2,z:4}, b: generateHollowBlueprint(4,2,4) }, { name: "5", d:{x:5,y:3,z:1}, b: generateArchBlueprint(5,3,1) } ];
+        // --- Blueprint Generation Helpers --- MOVED BEFORE MISSIONS ARRAY ---
+        function getBlueprintOffset(width, depth) { return { x: Math.floor((BOARD_WIDTH - width) / 2), z: Math.floor((BOARD_DEPTH - depth) / 2) }; }
+        function generateSolidBlueprint(width, height, depth) { const b=[]; const o=getBlueprintOffset(width,depth); for(let y=0;y<height;y++) for(let x=0;x<width;x++) for(let z=0;z<depth;z++) b.push({x:x+o.x,y:y,z:z+o.z}); return b; }
+        function generateWallBlueprint(width, height, depth) { const b=[]; const o=getBlueprintOffset(width,depth); for(let y=0;y<height;y++) for(let x=0;x<width;x++) for(let z=0;z<depth;z++) if(x===0||x===width-1||z===0||z===depth-1) b.push({x:x+o.x,y:y,z:z+o.z}); return b; }
+        function generateHollowBlueprint(width, height, depth) { const b=[]; const o=getBlueprintOffset(width,depth); for(let y=0;y<height;y++) for(let x=0;x<width;x++) for(let z=0;z<depth;z++) if(x===0||x===width-1||z===0||z===depth-1) b.push({x:x+o.x,y:y,z:z+o.z}); return b; }
+        function generateArchBlueprint(width, height, depth) { const b=[]; const o=getBlueprintOffset(width,depth); const ph=height-1; const sy=ph; if(width<3) return generateSolidBlueprint(width,height,depth); for(let y=0;y<ph;y++){ for(let z=0;z<depth;z++) b.push({x:o.x,y:y,z:o.z}); for(let z=0;z<depth;z++) b.push({x:o.x+width-1,y:y,z:z+o.z}); } for(let x=0;x<width;x++) for(let z=0;z<depth;z++) b.push({x:x+o.x,y:sy,z:z+o.z}); return b; }
+
+        // --- NEW Manual Blueprint Definitions --- (Defined before use)
+        const bridgeBlueprint = (() => { const b = []; const o = getBlueprintOffset(7, 1); const pH = 3; const sY = pH; for(let y=0; y<pH; y++) b.push({x:o.x+1, y:y, z:o.z}); for(let y=0; y<pH; y++) b.push({x:o.x+5, y:y, z:o.z}); for(let x=1; x<=5; x++) b.push({x:o.x+x, y:sY, z:o.z}); return b; })();
+        const overhangBlueprint = (() => { const b = []; const bW=4, bD=4; const o = getBlueprintOffset(bW, bD); for(let x=0; x<bW; x++) for(let z=0; z<bD; z++) b.push({x:o.x+x, y:0, z:o.z+z}); const ohW=2, ohD=2; const ohOX = o.x + Math.floor((bW - ohW) / 2); const ohOZ = o.z - 1; for(let x=0; x<ohW; x++) for(let z=0; z<ohD; z++) b.push({x:ohOX+x, y:1, z:ohOZ+z}); return b; })();
+        const crossBlueprint = (() => { const b = []; const o = getBlueprintOffset(5, 5); for (let y=0; y<2; y++) { for(let x=0; x<5; x++) b.push({x:o.x+x, y:y, z:o.z+2}); for(let z=0; z<5; z++) if(z!==2) b.push({x:o.x+2, y:y, z:o.z+z}); } return b; })();
+        const gapBlueprint = (() => { const b = []; const w=4, h=2, d=4; const o = getBlueprintOffset(w, d); for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { for (let z = 0; z < d; z++) { if (x === 0 || x === w - 1 || z === 0 || z === d - 1) { if (!(y === 0 && z === 0 && (x === 1 || x === 2))) { b.push({ x: x + o.x, y: y, z: z + o.z }); } } } } } return b; })();
+
+        // --- Combined Missions Array ---
+        const missions = [ { name: "1: Foundation", blueprint: generateSolidBlueprint(4, 1, 4) }, { name: "2: Low Walls", blueprint: generateWallBlueprint(4, 1, 4) }, { name: "3: The Pillar", blueprint: generateSolidBlueprint(1, 5, 1) }, { name: "4: Enclosure", blueprint: generateHollowBlueprint(4, 2, 4) }, { name: "5: Archway", blueprint: generateArchBlueprint(5, 3, 1) }, { name: "6: Bridge", blueprint: bridgeBlueprint }, { name: "7: Overhang", blueprint: overhangBlueprint }, { name: "8: Cross", blueprint: crossBlueprint }, { name: "9: Wall Gap", blueprint: gapBlueprint } ];
         // --- Tetromino Definitions --- (Shortened)
         const TETROMINOES = {'I':{c:0x00FFFF,s:[[0,0,0],[-1,0,0],[1,0,0],[2,0,0]]},'O':{c:0xFFFF00,s:[[0,0,0],[1,0,0],[0,1,0],[1,1,0]]},'T':{c:0x800080,s:[[0,0,0],[-1,0,0],[1,0,0],[0,1,0]]},'L':{c:0xFFA500,s:[[0,0,0],[-1,0,0],[1,0,0],[1,1,0]]},'J':{c:0x0000FF,s:[[0,0,0],[-1,0,0],[1,0,0],[-1,1,0]]},'S':{c:0x00FF00,s:[[0,0,0],[-1,0,0],[0,1,0],[1,1,0]]},'Z':{c:0xFF0000,s:[[0,0,0],[1,0,0],[0,1,0],[-1,1,0]]}}; const TETROMINO_KEYS = Object.keys(TETROMINOES);
-        // --- Blueprint Generation Helpers --- (Shortened)
-        function getBlueprintOffset(w,d){ return {x:Math.floor((BOARD_WIDTH-w)/2), z:Math.floor((BOARD_DEPTH-d)/2)}; } function generateSolidBlueprint(w,h,d){ const b=[]; const o=getBlueprintOffset(w,d); for(let y=0;y<h;y++) for(let x=0;x<w;x++) for(let z=0;z<d;z++) b.push({x:x+o.x,y:y,z:z+o.z}); return b; } function generateWallBlueprint(w,h,d){ const b=[]; const o=getBlueprintOffset(w,d); for(let y=0;y<h;y++) for(let x=0;x<w;x++) for(let z=0;z<d;z++) if(x===0||x===w-1||z===0||z===d-1) b.push({x:x+o.x,y:y,z:z+o.z}); return b; } function generateHollowBlueprint(w,h,d){ const b=[]; const o=getBlueprintOffset(w,d); for(let y=0;y<h;y++) for(let x=0;x<w;x++) for(let z=0;z<d;z++) if(x===0||x===w-1||z===0||z===d-1) b.push({x:x+o.x,y:y,z:z+o.z}); return b; } function generateArchBlueprint(w,h,d){ const b=[]; const o=getBlueprintOffset(w,d); const ph=h-1; const sy=ph; if(w<3) return generateSolidBlueprint(w,h,d); for(let y=0;y<ph;y++){ for(let z=0;z<d;z++) b.push({x:o.x,y:y,z:z+o.z}); for(let z=0;z<d;z++) b.push({x:o.x+w-1,y:y,z:z+o.z}); } for(let x=0;x<w;x++) for(let z=0;z<d;z++) b.push({x:x+o.x,y:sy,z:z+o.z}); return b; }
+
 
         // --- Initialization ---
         function init() {
+            // console.log("DEBUG: init() called"); // DEBUG
             clock = new THREE.Clock();
             // Get UI Elements
             uiOverlay = document.getElementById('ui-overlay'); pauseButton = document.getElementById('pause-button'); restartButton = document.getElementById('restart-button'); messageBox = document.getElementById('message-box'); previewCanvas = document.getElementById('preview-canvas'); scoreDisplay = document.getElementById('score-display'); themeButtons = document.querySelectorAll('.theme-button'); aiHelpButton = document.getElementById('ai-help-button'); welcomeScreen = document.getElementById('welcome-screen'); playerNameInput = document.getElementById('player-name'); startGameButton = document.getElementById('start-game-button');
@@ -326,35 +299,42 @@
             animate(); // Start rendering loop
         }
 
+        // --- Remaining Functions (initializeAndStartGameplay, showMainMenu, setupAudio, etc.) ---
+        // ... (No changes needed in the rest of the JavaScript logic from previous version) ...
         // Renamed from startGame
         async function initializeAndStartGameplay(demo = false) { // Added demo flag
              // --- Start Audio Context ---
-             if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') { try { await Tone.start(); audioReady = true; console.log('Audio context started!'); } catch (error) { console.error("Failed to start Tone.js audio context:", error); audioReady = false; } } else if (typeof Tone !== 'undefined' && Tone.context.state === 'running') { audioReady = true; } else { console.warn("Tone.js library not loaded."); audioReady = false; }
+             // console.log("DEBUG: Attempting to start audio context..."); // DEBUG
+             if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') { try { await Tone.start(); audioReady = true; console.log('Audio context started!'); if(backgroundMusicPlayer && backgroundMusicPlayer.loaded) backgroundMusicPlayer.start(); /* Start music if loaded */ } catch (error) { console.error("Failed to start Tone.js audio context:", error); audioReady = false; } } else if (typeof Tone !== 'undefined' && Tone.context.state === 'running') { audioReady = true; if(backgroundMusicPlayer && backgroundMusicPlayer.loaded) backgroundMusicPlayer.start(); /* Start music if loaded */ } else { console.warn("Tone.js library not loaded."); audioReady = false; }
              // ---
 
             uiOverlay.style.display = 'block'; // Show game UI
+            // console.log("DEBUG: uiOverlay display set to block"); // DEBUG
 
-            isDemoMode = demo; // Set demo mode flag
+            isDemoMode = demo;
             gameStarted = true; isPaused = false; isGameOver = false;
             totalScore = 0; currentMissionIndex = 0;
             aiHintUsesLeft = AI_HINT_USES;
             nextPieceData = determineNextPiece();
+            // console.log("DEBUG: Calling loadMission(0)"); // DEBUG
             loadMission(currentMissionIndex); // Load mission 0
 
             if (isDemoMode) {
                 console.log("Starting Demo Mode...");
-                showMessage("Demo Mode Running...", 0); // Persistent message
-                controls.enabled = false; // Disable camera controls during demo
-                // Start the automated demo steps
+                showMessage("Demo Mode Running...", 0);
+                controls.enabled = false;
+                 if(backgroundMusicPlayer) backgroundMusicPlayer.stop(); // No music in demo for now
                 runDemoStep();
             } else {
                 console.log("Gameplay Started!");
-                controls.enabled = true; // Ensure camera controls are enabled
+                controls.enabled = true;
+                // Music started via Tone.start() check above
             }
         }
 
         // Called when welcome screen button is clicked
         function showMainMenu() {
+             // console.log("DEBUG: showMainMenu called"); // DEBUG
              const name = playerNameInput.value.trim();
              if (name) { playerName = name; console.log(`Player Name: ${playerName}`); }
              else { console.log("No name entered, using default."); }
@@ -364,7 +344,42 @@
         }
 
 
-        async function setupAudio() { /* ... same as before ... */ try { synthMove = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 }, volume: -20 }).toDestination(); synthRotate = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.1 }, volume: -18 }).toDestination(); synthLock = new Tone.MembraneSynth({ pitchDecay: 0.02, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 }, volume: -12 }).toDestination(); synthCorrectLock = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -15 }).toDestination(); synthMissionComplete = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.4 }, volume: -10 }).toDestination(); console.log("Audio synths created."); } catch (error) { console.error("Error creating Tone.js synths:", error); audioReady = false; } }
+        async function setupAudio() {
+             try {
+                 if(typeof Tone === 'undefined'){ console.error("Tone is not defined!"); audioReady = false; return;}
+                 synthMove = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 }, volume: -20 }).toDestination();
+                 synthRotate = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.1 }, volume: -18 }).toDestination();
+                 synthRotateX = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.002, decay: 0.07, sustain: 0, release: 0.1 }, volume: -19 }).toDestination();
+                 synthRotateZ = new Tone.Synth({ oscillator: { type: 'pulse' , width: 0.3}, envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.1 }, volume: -19 }).toDestination();
+                 synthLock = new Tone.MembraneSynth({ pitchDecay: 0.02, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 }, volume: -12 }).toDestination();
+                 synthCorrectLock = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -15 }).toDestination();
+                 synthMissionComplete = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.4 }, volume: -10 }).toDestination();
+                 synthHardDrop = new Tone.MembraneSynth({ pitchDecay: 0.005, octaves: 4, envelope: { attack: 0.001, decay: 0.15, sustain: 0, release: 0.1 }, volume: -10 }).toDestination();
+
+                 // --- Background Music Setup ---
+                 // Replace this URL with the actual URL of your hosted MP3/OGG/WAV file
+                 const musicUrl = "https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/Falling%20Blocks.mp3";
+                 backgroundMusicPlayer = new Tone.Player({
+                     url: musicUrl,
+                     loop: true,
+                     autostart: false, // Start it after Tone.start() is called
+                     volume: -18, // Adjust volume as needed (-18dB is quite soft)
+                     onload: () => {
+                         console.log("Background music loaded successfully!");
+                     },
+                     onerror: (error) => {
+                         console.error("Error loading background music:", error);
+                         // Handle error, maybe disable music features
+                     }
+                 }).toDestination();
+                 // --- End Background Music Setup ---
+
+                 console.log("Audio synths created.");
+             } catch (error) {
+                  console.error("Error creating Tone.js synths:", error);
+                  audioReady = false;
+             }
+         }
         function initPreviewRenderer() { /* ... same as before ... */ previewScene=new THREE.Scene(); previewScene.background=null; const a=PREVIEW_CANVAS_SIZE/PREVIEW_CANVAS_SIZE; const fS=4*CUBE_SIZE; previewCamera=new THREE.OrthographicCamera(fS*a/-2,fS*a/2,fS/2,fS/-2,0.1,100); previewCamera.position.set(0,0,5); previewCamera.lookAt(0,0,0); previewRenderer=new THREE.WebGLRenderer({canvas:previewCanvas,antialias:true,alpha:true}); previewRenderer.setSize(PREVIEW_CANVAS_SIZE,PREVIEW_CANVAS_SIZE); previewRenderer.setPixelRatio(window.devicePixelRatio); previewRenderer.toneMapping=THREE.ACESFilmicToneMapping; previewRenderer.toneMappingExposure=1.0; const pA=new THREE.AmbientLight(0xffffff,1.0); previewScene.add(pA); const pL=new THREE.DirectionalLight(0xffffff,1.5); pL.position.set(1,2,3); previewScene.add(pL); }
         function loadTextures() { /* ... same as before ... */ const gTU=`https://placehold.co/64x64/cccccc/999999.png?text=+`; groundTexture=textureLoader.load(gTU,(t)=>{t.wrapS=THREE.RepeatWrapping; t.wrapT=THREE.RepeatWrapping; t.repeat.set(BOARD_WIDTH,BOARD_DEPTH); console.log("GT loaded."); groundPlane=scene.getObjectByName("groundPlane"); if(groundPlane){groundPlane.material.map=t; groundPlane.material.needsUpdate=true;}},undefined,(e)=>{console.error('Error loading GT:',e);}); }
         function initBoard() { /* ... same as before ... */ board=Array(BOARD_WIDTH).fill(null).map(()=>Array(BOARD_HEIGHT).fill(null).map(()=>Array(BOARD_DEPTH).fill(0))); }
@@ -379,7 +394,9 @@
 
 
         // --- Mission Handling --- (Unchanged)
-        function loadMission(mI, isR=false){ if(!gameStarted) return; if(fallInterval)clearInterval(fallInterval); fallInterval=null; if(!isR&&mI>=missions.length){showMessage(`All Missions Complete! Final Score: ${totalScore}`);gameOver(true);return;} if(mI>=missions.length){mI=missions.length-1;} const m=missions[mI]; console.log(`Loading Mission: ${m.name}`); clearBoard(); clearGhostBlocks(); if(currentPiece){scene.remove(currentPiece.mesh);currentPiece=null;} placedTargetBlocks=0; targetBlockCount=m.b.length; displayBlueprint(m.b); document.getElementById('mission-name').textContent=m.name; isGameOver=false; isPaused=false; pauseButton.textContent='Pause'; hideMessage(); missionStartTime=clock.getElapsedTime(); updateUI(); if(!isR||!nextPieceData){nextPieceData=determineNextPiece();} updatePreview(nextPieceData); spawnPiece(); if(currentPiece&&!isGameOver&&!isDemoMode){currentFallSpeed=FALL_SPEED_NORMAL;startGameLoop();}else if(isGameOver){console.log("GO on load.");} }
+        function loadMission(mI, isR=false){ if(!gameStarted) return; if(fallInterval)clearInterval(fallInterval); fallInterval=null; if(!isR&&mI>=missions.length){showMessage(`All Missions Complete! Final Score: ${totalScore}`);gameOver(true);return;} if(mI>=missions.length){mI=missions.length-1;} const m=missions[mI]; console.log(`Loading Mission: ${m.name}`); clearBoard(); clearGhostBlocks(); if(currentPiece){scene.remove(currentPiece.mesh);currentPiece=null;} placedTargetBlocks=0; targetBlockCount=m.blueprint.length; // Use m.blueprint here
+        displayBlueprint(m.blueprint); // Use m.blueprint here
+        document.getElementById('mission-name').textContent=m.name; isGameOver=false; isPaused=false; pauseButton.textContent='Pause'; hideMessage(); missionStartTime=clock.getElapsedTime(); updateUI(); if(!isR||!nextPieceData){nextPieceData=determineNextPiece();} updatePreview(nextPieceData); spawnPiece(); if(currentPiece&&!isGameOver&&!isDemoMode){currentFallSpeed=FALL_SPEED_NORMAL;startGameLoop();}else if(isGameOver){console.log("GO on load.");} }
         function displayBlueprint(b){ /* ... same as before ... */ const gm=new THREE.MeshStandardMaterial({color:0xaaaaaa,transparent:true,opacity:0.25,roughness:0.9}); const gg=new THREE.BoxGeometry(CUBE_SIZE*0.95,CUBE_SIZE*0.95,CUBE_SIZE*0.95); b.forEach(c=>{ if(c.x<0||c.x>=BOARD_WIDTH||c.y<0||c.y>=BOARD_HEIGHT||c.z<0||c.z>=BOARD_DEPTH){console.warn("BP coord out:",c);return;} const gc=new THREE.Mesh(gg,gm.clone()); gc.position.set(c.x*CUBE_SIZE,c.y*CUBE_SIZE,c.z*CUBE_SIZE); gc.userData.isGhost=true; gc.userData.originalPosition={x:c.x,y:c.y,z:c.z}; gc.userData.baseOpacity = gm.opacity; scene.add(gc); ghostBlocks.push(gc);}); targetBlockCount=ghostBlocks.length; updateUI();}
         function clearGhostBlocks() { stopBlinkingHint(); ghostBlocks.forEach(g => { scene.remove(g); }); ghostBlocks = []; }
         function checkMissionCompletion(){
@@ -389,12 +406,8 @@
                 const mN=missions[currentMissionIndex].name;
 
                 if (isDemoMode) {
-                    // End demo after completing the mission
-                    showMessage(`Demo Complete!`, 2000);
-                    setTimeout(goToMainMenu, 2100); // Return to menu after delay
-                    return true; // Signal completion handled
+                    showMessage(`Demo Complete!`, 2000); setTimeout(goToMainMenu, 2100); return true;
                 } else {
-                    // Normal game completion logic
                     let mCB=POINTS_MISSION_COMPLETE; const tT=clock.getElapsedTime()-missionStartTime; const tBR=Math.max(0,1.0-(tT/MAX_TIME_ALLOWED_PER_MISSION)); let tB=Math.round(MAX_TIME_BONUS*tBR); totalScore+=mCB; totalScore+=tB; updateUI(); showMessage(`Mission ${mN} Complete!\nScore +${mCB} +${tB} (Time)`,3500); const cP=new THREE.Vector3(BOARD_WIDTH/2*CUBE_SIZE,0,BOARD_DEPTH/2*CUBE_SIZE); createParticleEffect(cP,0xffd700,150,1.5); currentMissionIndex++; if(fallInterval)clearInterval(fallInterval); fallInterval=null;
                     if (audioReady && synthMissionComplete) { const now = Tone.now(); synthMissionComplete.triggerAttackRelease(["C4", "E4", "G4", "C5"], "8n", now); synthMissionComplete.triggerAttackRelease("E5", "4n", now + Tone.Time("4n").toSeconds()); }
                     setTimeout(()=>{loadMission(currentMissionIndex);},3600);
@@ -405,17 +418,44 @@
         }
 
         // --- Game Loop & Piece Logic --- (Unchanged)
-        function startGameLoop(){ if(isPaused||isGameOver||!gameStarted||isDemoMode)return; /* Don't run interval in demo */ if(fallInterval)clearInterval(fallInterval); fallInterval=setInterval(()=>{if(!isPaused&&!isGameOver&&currentPiece&&gameStarted&&!isDemoMode){movePiece(0,-1,0);}},currentFallSpeed); console.log("Timer start/reset:",currentFallSpeed); }
-        function stopGameLoop(){ if(fallInterval){clearInterval(fallInterval); fallInterval=null; console.log("Timer stop.");} if (demoTimeoutId) { clearTimeout(demoTimeoutId); demoTimeoutId = null; console.log("Demo step timer stopped.");} } // Also stop demo timer
+        function startGameLoop(){ if(isPaused||isGameOver||!gameStarted||isDemoMode)return; /* Don't run interval in demo */ if(fallInterval)clearInterval(fallInterval); fallInterval=setInterval(()=>{if(!isPaused&&!isGameOver&&currentPiece&&gameStarted&&!isDemoMode){movePiece(0,-1,0);}},currentFallSpeed); /* console.log("Timer start/reset:",currentFallSpeed); */ } // Quieten log
+        function stopGameLoop(){ if(fallInterval){clearInterval(fallInterval); fallInterval=null;} if (demoTimeoutId) { clearTimeout(demoTimeoutId); demoTimeoutId = null;} } // Also stop demo timer
         function resetFallTimer(){ if(!isPaused&&!isGameOver&&gameStarted&&!isDemoMode){startGameLoop();} } // Don't run in demo
         function determineNextPiece(){ const k=TETROMINO_KEYS[Math.floor(Math.random()*TETROMINO_KEYS.length)]; const d=TETROMINOES[k]; return {type:k, color:d.c, shape:JSON.parse(JSON.stringify(d.s))}; }
-        function spawnPiece(){ if(isGameOver||isPaused||!gameStarted)return; if(!nextPieceData){console.warn("nextPD null."); nextPieceData=determineNextPiece();} const cPD=nextPieceData; nextPieceData=determineNextPiece(); updatePreview(nextPieceData); const sX=Math.floor(BOARD_WIDTH/2); const sY=BOARD_HEIGHT-1; const sZ=Math.floor(BOARD_DEPTH/2); const pG=new THREE.Group(); const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:cPD.color,metalness:0.3,roughness:0.5}); cPD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); c.castShadow=true; c.receiveShadow=false; pG.add(c); }); currentPiece={mesh:pG,shape:cPD.shape,x:sX,y:sY,z:sZ,rotationY:0}; currentPiece.mesh.position.set(sX*CUBE_SIZE,sY*CUBE_SIZE,sZ*CUBE_SIZE); if(!isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,currentPiece.shape)){console.log("GO on spawn!"); gameOver(); currentPiece=null; if(nextPieceData)updatePreview(nextPieceData); return;} scene.add(currentPiece.mesh); console.log("Spawned:",cPD.type,"Next:",nextPieceData.type); updateUI(); }
+        function spawnPiece(){ if(isGameOver||isPaused||!gameStarted)return; if(!nextPieceData){console.warn("nextPD null."); nextPieceData=determineNextPiece();} const cPD=nextPieceData; nextPieceData=determineNextPiece(); updatePreview(nextPieceData); const sX=Math.floor(BOARD_WIDTH/2); const sY=BOARD_HEIGHT - 2; /* Adjusted spawn height */ const sZ=Math.floor(BOARD_DEPTH/2); const pG=new THREE.Group(); const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:cPD.color,metalness:0.3,roughness:0.5}); cPD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); c.castShadow=true; c.receiveShadow=false; pG.add(c); }); currentPiece={mesh:pG,shape:cPD.shape,x:sX,y:sY,z:sZ,rotationY:0, rotationX: 0, rotationZ: 0}; currentPiece.mesh.position.set(sX*CUBE_SIZE,sY*CUBE_SIZE,sZ*CUBE_SIZE); if(!isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,currentPiece.shape)){console.log("Game Over on spawn!"); gameOver(); currentPiece=null; if(nextPieceData)updatePreview(nextPieceData); return;} scene.add(currentPiece.mesh); /* console.log("Spawned:",cPD.type,"Next:",nextPieceData.type); */ updateUI(); }
         function movePiece(dx,dy,dz, userInitiated = false){ if(!currentPiece||isPaused||isGameOver||!gameStarted)return; stopBlinkingHint(); const nX=currentPiece.x+dx; const nY=currentPiece.y+dy; const nZ=currentPiece.z+dz; if(isValidMove(nX,nY,nZ,currentPiece.shape)){ currentPiece.x=nX; currentPiece.y=nY; currentPiece.z=nZ; currentPiece.mesh.position.set(currentPiece.x*CUBE_SIZE,currentPiece.y*CUBE_SIZE,currentPiece.z*CUBE_SIZE); if (userInitiated && audioReady && synthMove) { synthMove.triggerAttackRelease("C5", "32n", Tone.now()); } } else if(dy<0){ lockPiece(); if(!isGameOver && !isDemoMode){ spawnPiece(); if(currentFallSpeed!==FALL_SPEED_NORMAL){ currentFallSpeed=FALL_SPEED_NORMAL; resetFallTimer(); } } else if (!isGameOver && isDemoMode) { runDemoStep(); /* Trigger next demo step after lock */ } } }
-        function rotatePieceY(){ if(!currentPiece||isPaused||isGameOver||!gameStarted)return; stopBlinkingHint(); const ax=new THREE.Vector3(0,1,0); const ang=Math.PI/2; const qu=new THREE.Quaternion().setFromAxisAngle(ax,ang); const rs=currentPiece.shape.map(o=>{ const v=new THREE.Vector3(o[0],o[1],o[2]).applyQuaternion(qu); return [Math.round(v.x),Math.round(v.y),Math.round(v.z)]; }); if(isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,rs)){ currentPiece.mesh.applyQuaternion(qu); currentPiece.shape=rs; currentPiece.rotationY=(currentPiece.rotationY+ang)%(2*Math.PI); if (audioReady && synthRotate) { synthRotate.triggerAttackRelease("E5", "16n", Tone.now()); } console.log("Rotated"); } else { console.log("Rot blocked"); } }
+
+        // Generic rotation function
+        function rotatePiece(axis, angle) {
+            if(!currentPiece||isPaused||isGameOver||!gameStarted)return false;
+            stopBlinkingHint();
+
+            const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+            const tempVec = new THREE.Vector3();
+            const rotatedShape = currentPiece.shape.map(offset => {
+                tempVec.set(offset[0], offset[1], offset[2]);
+                tempVec.applyQuaternion(quaternion);
+                return [Math.round(tempVec.x), Math.round(tempVec.y), Math.round(tempVec.z)];
+            });
+
+            if(isValidMove(currentPiece.x, currentPiece.y, currentPiece.z, rotatedShape)){
+                currentPiece.mesh.applyQuaternion(quaternion);
+                currentPiece.shape = rotatedShape;
+                return true;
+            } else {
+                console.log("Rotation blocked");
+                return false;
+            }
+        }
+
+        function rotatePieceY(){ if (rotatePiece(new THREE.Vector3(0, 1, 0), Math.PI / 2)) { if (audioReady && synthRotate) synthRotate.triggerAttackRelease("E5", "16n", Tone.now()); } }
+        function rotatePieceX(clockwise = true){ const angle = clockwise ? Math.PI / 2 : -Math.PI / 2; if (rotatePiece(new THREE.Vector3(1, 0, 0), angle)) { if (audioReady && synthRotateX) synthRotateX.triggerAttackRelease("F#5", "16n", Tone.now()); } }
+        function rotatePieceZ(clockwise = true){ const angle = clockwise ? Math.PI / 2 : -Math.PI / 2; if (rotatePiece(new THREE.Vector3(0, 0, 1), angle)) { if (audioReady && synthRotateZ) synthRotateZ.triggerAttackRelease("G#5", "16n", Tone.now()); } }
+
         function isValidMove(bX,bY,bZ,sh){ /* Allow check even if game not started for AI/Demo */ for(const o of sh){ const wX=bX+o[0]; const wY=bY+o[1]; const wZ=bZ+o[2]; if(wX<0||wX>=BOARD_WIDTH||wY<0||wZ<0||wZ>=BOARD_DEPTH)return false; if(wY>=BOARD_HEIGHT)continue; if(board[wX][wY][wZ]!==0)return false; } return true; }
-        function lockPiece(){ if(!currentPiece||isGameOver||!gameStarted)return; stopBlinkingHint(); console.log("Locking:",currentPiece.x,currentPiece.y,currentPiece.z); let mPM=false; const pM=currentPiece.mesh.children[0].material; let sGTL=0; currentPiece.shape.forEach(o=>{ const wX=currentPiece.x+o[0]; const wY=currentPiece.y+o[1]; const wZ=currentPiece.z+o[2]; if(wX>=0&&wX<BOARD_WIDTH&&wY>=0&&wY<BOARD_HEIGHT&&wZ>=0&&wZ<BOARD_DEPTH){ const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=pM.clone(); const lC=new THREE.Mesh(geo,mat); lC.position.set(wX*CUBE_SIZE,wY*CUBE_SIZE,wZ*CUBE_SIZE); lC.castShadow=true; lC.receiveShadow=true; lockedBlocksGroup.add(lC); board[wX][wY][wZ]=1; if (!isDemoMode) totalScore+=POINTS_PER_CUBE; sGTL+=POINTS_PER_CUBE; const fGI=ghostBlocks.findIndex(g=>g.visible&&g.userData.originalPosition.x===wX&&g.userData.originalPosition.y===wY&&g.userData.originalPosition.z===wZ); if(fGI!==-1){ ghostBlocks[fGI].visible=false; placedTargetBlocks++; mPM=true; console.log("BP filled!"); if (!isDemoMode) totalScore+=POINTS_PER_CORRECT_CUBE_BONUS; sGTL+=POINTS_PER_CORRECT_CUBE_BONUS; const pP=lC.position.clone(); createParticleEffect(pP,mat.color); const oE=mat.emissive.getHex(); mat.emissive.setHex(0xffffff); mat.needsUpdate=true; setTimeout(()=>{if(lC.parent){mat.emissive.setHex(oE); mat.needsUpdate=true;}},LOCK_FLASH_DURATION); } }else{ console.warn("Lock out:",wX,wY,wZ); if(wY>=BOARD_HEIGHT){console.log("Lock above - GO."); if(currentPiece&&currentPiece.mesh.parent)scene.remove(currentPiece.mesh); currentPiece=null; gameOver(); return;} } }); if(currentPiece&&currentPiece.mesh.parent){scene.remove(currentPiece.mesh);} currentPiece=null; console.log(`Score gain lock: ${sGTL}`); if (audioReady && !isDemoMode) { if (mPM && synthCorrectLock) { synthCorrectLock.triggerAttackRelease("G5", "16n", Tone.now()); } if (synthLock) { synthLock.triggerAttackRelease("C2", "8n", Tone.now() + 0.01); } } updateUI(); if(!isGameOver&&mPM){checkMissionCompletion();} }
+        function lockPiece(){ if(!currentPiece||isGameOver||!gameStarted)return; stopBlinkingHint(); /* console.log("Locking:",currentPiece.x,currentPiece.y,currentPiece.z); */ let mPM=false; const pM=currentPiece.mesh.children[0].material; let sGTL=0; currentPiece.shape.forEach(o=>{ const wX=currentPiece.x+o[0]; const wY=currentPiece.y+o[1]; const wZ=currentPiece.z+o[2]; if(wX>=0&&wX<BOARD_WIDTH&&wY>=0&&wY<BOARD_HEIGHT&&wZ>=0&&wZ<BOARD_DEPTH){ const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=pM.clone(); const lC=new THREE.Mesh(geo,mat); lC.position.set(wX*CUBE_SIZE,wY*CUBE_SIZE,wZ*CUBE_SIZE); lC.castShadow=true; lC.receiveShadow=true; lockedBlocksGroup.add(lC); board[wX][wY][wZ]=1; if (!isDemoMode) totalScore+=POINTS_PER_CUBE; sGTL+=POINTS_PER_CUBE; const fGI=ghostBlocks.findIndex(g=>g.visible&&g.userData.originalPosition.x===wX&&g.userData.originalPosition.y===wY&&g.userData.originalPosition.z===wZ); if(fGI!==-1){ ghostBlocks[fGI].visible=false; placedTargetBlocks++; mPM=true; /* console.log("BP filled!"); */ if (!isDemoMode) totalScore+=POINTS_PER_CORRECT_CUBE_BONUS; sGTL+=POINTS_PER_CORRECT_CUBE_BONUS; const pP=lC.position.clone(); createParticleEffect(pP,mat.color); const oE=mat.emissive.getHex(); mat.emissive.setHex(0xffffff); mat.needsUpdate=true; setTimeout(()=>{if(lC.parent){mat.emissive.setHex(oE); mat.needsUpdate=true;}},LOCK_FLASH_DURATION); } }else{ console.warn("Lock out:",wX,wY,wZ); if(wY>=BOARD_HEIGHT){console.log("Lock above - GO."); if(currentPiece&&currentPiece.mesh.parent)scene.remove(currentPiece.mesh); currentPiece=null; gameOver(); return;} } }); if(currentPiece&&currentPiece.mesh.parent){scene.remove(currentPiece.mesh);} currentPiece=null; /* console.log(`Score gain lock: ${sGTL}`); */ if (audioReady && !isDemoMode) { if (mPM && synthCorrectLock) { synthCorrectLock.triggerAttackRelease("G5", "16n", Tone.now()); } if (synthLock) { synthLock.triggerAttackRelease("C2", "8n", Tone.now() + 0.01); } } updateUI(); if(!isGameOver&&mPM){checkMissionCompletion();} }
         function clearBoard(){ initBoard(); while(lockedBlocksGroup.children.length>0){ const o=lockedBlocksGroup.children[0]; if(o.geometry)o.geometry.dispose(); if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose()); else o.material.dispose();} lockedBlocksGroup.remove(o); } activeParticles.forEach(p=>scene.remove(p.mesh)); activeParticles=[]; removeStarfield(); }
-        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); stopBlinkingHint(); if(!isC)showMessage(`Game Over! Final Score: ${totalScore}`); updateUI(); }
+        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); stopBlinkingHint(); if(backgroundMusicPlayer) backgroundMusicPlayer.stop(); if(!isC)showMessage(`Game Over! Final Score: ${totalScore}`); updateUI(); }
 
         // --- UI Functions ---
         function updateUI(){ if(!gameStarted && !isGameOver && !isDemoMode) return; // Don't update UI before start, but update on Game Over or during Demo
@@ -428,13 +468,28 @@
         }
         function showMessage(t,d=3000){ messageBox.textContent=t; messageBox.style.display='block'; if(d>0){setTimeout(()=>{if(messageBox.textContent===t)hideMessage();},d);} }
         function hideMessage(){ messageBox.style.display='none'; }
-        function togglePause(){ if(isGameOver||!gameStarted||isDemoMode)return; /* No pause in demo */ isPaused=!isPaused; console.log("Paused:",isPaused); if(isPaused){ stopGameLoop(); stopBlinkingHint(); showMessage("Paused",0); pauseButton.textContent='Resume'; }else{ hideMessage(); pauseButton.textContent='Pause'; if(currentPiece)startGameLoop(); else{ console.log("Resume no piece, spawn."); spawnPiece(); if(currentPiece&&!isGameOver)startGameLoop(); } } updateUI(); }
+        function togglePause(){
+            if(isGameOver||!gameStarted||isDemoMode)return; /* No pause in demo */
+            isPaused=!isPaused; console.log("Paused:",isPaused);
+            if(isPaused){
+                stopGameLoop(); stopBlinkingHint();
+                if(backgroundMusicPlayer) backgroundMusicPlayer.stop(); // Stop music on pause
+                showMessage("Paused",0); pauseButton.textContent='Resume';
+            } else {
+                hideMessage(); pauseButton.textContent='Pause';
+                if(backgroundMusicPlayer && backgroundMusicPlayer.loaded) backgroundMusicPlayer.start(); // Resume music
+                if(currentPiece)startGameLoop();
+                else{ console.log("Resume no piece, spawn."); spawnPiece(); if(currentPiece&&!isGameOver)startGameLoop(); }
+            }
+            updateUI();
+        }
 
         // Renamed from restartMission
         function goToMainMenu() {
-            console.log("Returning to main menu...");
+            // console.log("DEBUG: goToMainMenu called"); // DEBUG
             stopGameLoop(); // Stops interval and demo timeout
             stopBlinkingHint();
+            if (backgroundMusicPlayer) backgroundMusicPlayer.stop(); // Stop music
             isGameOver = false; isPaused = false; gameStarted = false; isDemoMode = false; // Reset all flags
             hideMessage();
 
@@ -451,27 +506,25 @@
         }
 
         // --- Preview Update --- (Unchanged)
-        function updatePreview(pD){ if(!previewScene)return; if(previewPieceMesh){previewScene.remove(previewPieceMesh);} if(!pD)return; const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:pD.color,metalness:0.3,roughness:0.5}); previewPieceMesh=new THREE.Group(); pD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); previewPieceMesh.add(c); }); const box=new THREE.Box3().setFromObject(previewPieceMesh); const center=box.getCenter(new THREE.Vector3()); previewPieceMesh.position.sub(center); previewScene.add(previewPieceMesh); console.log("Preview:",pD.type); }
+        function updatePreview(pD){ if(!previewScene)return; if(previewPieceMesh){previewScene.remove(previewPieceMesh);} if(!pD)return; const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:pD.color,metalness:0.3,roughness:0.5}); previewPieceMesh=new THREE.Group(); pD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); previewPieceMesh.add(c); }); const box=new THREE.Box3().setFromObject(previewPieceMesh); const center=box.getCenter(new THREE.Vector3()); previewPieceMesh.position.sub(center); previewScene.add(previewPieceMesh); /* console.log("Preview:",pD.type); */ } // Quieten preview log
 
         // --- Particle System --- (Unchanged)
         function createParticleEffect(p,c=0xffffff,co=PARTICLE_COUNT,l=PARTICLE_LIFESPAN){ const pg=new THREE.BufferGeometry(); const v=[]; const ve=[]; const st=[]; for(let i=0;i<co;i++){ v.push(0,0,0); const th=Math.random()*Math.PI*2; const ph=Math.acos((Math.random()*2)-1); const sp=1+Math.random()*3; ve.push(Math.sin(ph)*Math.cos(th)*sp,Math.cos(ph)*sp,Math.sin(ph)*Math.sin(th)*sp); st.push(clock.getElapsedTime()); } pg.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); pg.setAttribute('velocity',new THREE.Float32BufferAttribute(ve,3)); pg.setAttribute('startTime',new THREE.Float32BufferAttribute(st,1)); const pm=new THREE.PointsMaterial({color:c,size:0.1,transparent:true,opacity:0.8,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending}); const pt=new THREE.Points(pg,pm); pt.position.copy(p); scene.add(pt); activeParticles.push({mesh:pt,geometry:pg,material:pm,startTime:clock.getElapsedTime(),lifespan:l}); }
         function updateParticles(dt){ const ct=clock.getElapsedTime(); for(let i=activeParticles.length-1;i>=0;i--){ const s=activeParticles[i]; const et=ct-s.startTime; if(et>s.lifespan){ scene.remove(s.mesh); s.geometry.dispose(); s.material.dispose(); activeParticles.splice(i,1); continue; } const ps=s.geometry.attributes.position; const vs=s.geometry.attributes.velocity; for(let j=0;j<ps.count;j++){ const ix=j*3; const pST=s.geometry.attributes.startTime.array[j]; const pET=ct-pST; ps.array[ix]+=vs.array[ix]*dt; ps.array[ix+1]+=vs.array[ix+1]*dt-0.5*9.8*pET*dt; ps.array[ix+2]+=vs.array[ix+2]*dt; } ps.needsUpdate=true; s.material.opacity=0.8*(1.0-(et/s.lifespan)); s.material.needsUpdate=true; } }
 
         // --- AI Hint / Demo Logic ---
-        // Renamed: Finds best placement for a given piece shape
+        // Finds best placement for a given piece shape (Y-Rotation ONLY currently)
+        // TODO: Update this function to consider X and Z rotations for AI/Demo
         function findBestPlacementForPiece(pieceShape) {
             if (!pieceShape || !ghostBlocks.length) return null;
 
             let bestScore = -1; let bestPlacement = null;
             const visibleGhostCoordsMap=new Map(); ghostBlocks.forEach((g,index)=>{if(g.visible){const pos=g.userData.originalPosition; const key=`${pos.x},${pos.y},${pos.z}`; visibleGhostCoordsMap.set(key,{mesh:g,index:index});}});
-            // If no ghosts visible, cannot find a placement that fills ghosts
             if (visibleGhostCoordsMap.size === 0 && !isDemoMode) return null; // Hint needs ghosts
-             // For Demo mode, if no ghosts are left, it might mean the mission is done or nearly done.
-             // Let's allow finding *any* valid spot in demo if no ghosts match.
              const needsGhost = !isDemoMode || visibleGhostCoordsMap.size > 0;
 
-
             const yAxis=new THREE.Vector3(0,1,0);
+            // *** LIMITATION: Only checks Y-axis rotations for now ***
             for(let rot=0;rot<4;rot++){
                 const angle=rot*Math.PI/2; const quaternion=new THREE.Quaternion().setFromAxisAngle(yAxis,angle);
                 const rotatedShape=pieceShape.map(offset=>{const vec=new THREE.Vector3(offset[0],offset[1],offset[2]).applyQuaternion(quaternion); return [Math.round(vec.x),Math.round(vec.y),Math.round(vec.z)];});
@@ -482,22 +535,14 @@
                         let filledGhostsCount=0; let filledGhostMeshes=[];
                         rotatedShape.forEach(offset=>{const wX=x+offset[0]; const wY=finalY+offset[1]; const wZ=z+offset[2]; const key=`${wX},${wY},${wZ}`; if(visibleGhostCoordsMap.has(key)){filledGhostsCount++; filledGhostMeshes.push(visibleGhostCoordsMap.get(key).mesh);}});
 
-                        // Check if placement is suitable
-                        // Hint requires filling ghosts. Demo prefers filling ghosts but accepts any valid spot if none fill ghosts.
                         if ( (needsGhost && filledGhostsCount > 0) || (!needsGhost && filledGhostsCount === 0) ) {
-                             const placementScore=filledGhostsCount*1000-finalY; // Score still prioritizes filling ghosts
+                             const placementScore=filledGhostsCount*1000-finalY;
                              if(placementScore>bestScore){bestScore=placementScore; bestPlacement={x,y:finalY,z,rotation:angle,shape:rotatedShape,filledMeshes:filledGhostMeshes};}
                         }
                     }
                 }
             }
-            // If in Demo and still no spot found (e.g., board full), return null
-            if (isDemoMode && !bestPlacement && needsGhost) {
-                 console.log("Demo/Hint: No ghost-filling spot found.");
-                 // Optionally, could add logic here to find *any* valid spot for demo,
-                 // but for now, returning null is okay, demo step will handle it.
-            }
-
+            if (isDemoMode && !bestPlacement && needsGhost) { console.log("Demo/Hint: No ghost-filling spot found."); }
             return bestPlacement;
         }
 
@@ -509,12 +554,13 @@
         function runDemoStep() {
             if (!isDemoMode || isGameOver || !currentPiece) { if (isDemoMode) goToMainMenu(); return; } // Stop demo if conditions change
 
-            console.log("Running Demo Step...");
+            // console.log("DEBUG: Running Demo Step..."); // DEBUG
             const placement = findBestPlacementForPiece(currentPiece.shape); // Find placement for CURRENT piece
 
             if (placement) {
+                 // console.log("DEBUG: Demo found placement:", placement); // DEBUG
                  // Instantly move and lock
-                 currentPiece.mesh.rotation.set(0, placement.rotation, 0);
+                 currentPiece.mesh.rotation.set(0, placement.rotation, 0); // Demo only uses Y rotation from findBestPlacement
                  currentPiece.mesh.position.set(placement.x * CUBE_SIZE, placement.y * CUBE_SIZE, placement.z * CUBE_SIZE);
                  currentPiece.x = placement.x; currentPiece.y = placement.y; currentPiece.z = placement.z;
                  currentPiece.shape = placement.shape; currentPiece.rotationY = placement.rotation;
@@ -523,6 +569,7 @@
 
                  // If game didn't end during lock/completion check, schedule next step
                  if (!isGameOver && isDemoMode) { // Check isDemoMode again in case completion ended it
+                    // console.log("DEBUG: Demo scheduling next step after lock."); // DEBUG
                     spawnPiece(); // Spawn next piece immediately for demo logic
                     if (currentPiece) { // Ensure a piece actually spawned
                         demoTimeoutId = setTimeout(runDemoStep, DEMO_STEP_DELAY);
@@ -530,6 +577,8 @@
                          console.log("Demo: No more pieces to spawn or game over after spawn.");
                          goToMainMenu(); // End demo if no piece spawns
                     }
+                 } else if (isGameOver) {
+                     console.log("Demo detected game over after lock.");
                  }
             } else {
                  // No valid placement found for the current piece. Skip it.
@@ -551,20 +600,18 @@
         }
 
 
-        // --- Event Handlers --- (WASD Controls, disable during demo)
+        // --- Event Handlers --- (WASD + QE/ZC Controls + Tab)
         function onWindowResize(){ camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); }
         function onKeyDown(e){
-            // Allow R key always to return to menu
             if(e.key==='r'||e.key==='R'){ goToMainMenu(); return; }
-            // Other controls only active if game started and not in demo
-            if(!gameStarted || isDemoMode) return;
+            if(!gameStarted || isDemoMode) return; // Ignore most keys if game not started or in demo
 
             if(e.key==='p'||e.key==='P'){togglePause();return;}
             if(e.key==='h'||e.key==='H'){useAiHint(); return;}
 
             if(isGameOver||isPaused||!currentPiece)return;
 
-            if (['a', 'A', 'd', 'D', 'w', 'W', 's', 'S', ' ', 'ArrowDown'].includes(e.key)) {
+            if (['a', 'A', 'd', 'D', 'w', 'W', 's', 'S', ' ', 'q', 'Q', 'e', 'E', 'z', 'Z', 'c', 'C', 'ArrowDown', 'Tab'].includes(e.key)) {
                 stopBlinkingHint();
             }
 
@@ -574,13 +621,54 @@
                 case 'w': case 'W': movePiece(0,0,-1, true); break;
                 case 's': case 'S': movePiece(0,0,1, true); break;
                 case ' ': rotatePieceY(); break;
+                case 'q': case 'Q': rotatePieceX(false); break;
+                case 'e': case 'E': rotatePieceX(true); break;
+                case 'z': case 'Z': rotatePieceZ(false); break;
+                case 'c': case 'C': rotatePieceZ(true); break;
                 case 'ArrowDown': if(currentFallSpeed!==FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_FAST;resetFallTimer();}movePiece(0,-1,0);break;
+                case 'Tab':
+                    e.preventDefault(); // Prevent default browser tab behavior
+                    hardDrop();
+                    break;
             }
         }
         function onKeyUp(e){ if(!gameStarted || isGameOver||isPaused||isDemoMode)return; if(e.key==='ArrowDown'){if(currentFallSpeed===FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_NORMAL;resetFallTimer();}} }
 
+        // --- Hard Drop ---
+        function hardDrop() {
+            if (!currentPiece || isPaused || isGameOver || !gameStarted || isDemoMode) return;
+
+            stopBlinkingHint();
+            stopGameLoop(); // Stop normal falling
+
+            let finalY = currentPiece.y;
+            while (isValidMove(currentPiece.x, finalY - 1, currentPiece.z, currentPiece.shape)) {
+                finalY--;
+            }
+
+            if (finalY < currentPiece.y) {
+                currentPiece.y = finalY;
+                currentPiece.mesh.position.y = finalY * CUBE_SIZE;
+                // Play hard drop sound
+                if (audioReady && synthHardDrop) {
+                    synthHardDrop.triggerAttackRelease("C3", "8n", Tone.now());
+                }
+            }
+
+            lockPiece(); // Lock the piece immediately
+
+            // Spawn next piece and restart timer if applicable
+            if (!isGameOver) {
+                spawnPiece();
+                if (currentPiece && !isGameOver) { // Check again after spawn
+                    resetFallTimer();
+                }
+            }
+        }
+
+
         // --- Animation Loop --- (Unchanged)
-        function animate() { requestAnimationFrame(animate); const dt=clock.getDelta(); controls.update(); if(gameStarted && !isPaused && !isDemoMode){updateParticles(dt);} /* Only update particles in normal play */ renderer.render(scene,camera); if(previewRenderer&&previewScene&&previewCamera){ if(previewPieceMesh && gameStarted && !isPaused){previewPieceMesh.rotation.y+=0.01;} previewRenderer.render(previewScene,previewCamera); } }
+        function animate() { requestAnimationFrame(animate); const dt=clock.getDelta(); controls.update(); if(gameStarted && !isPaused && !isDemoMode){updateParticles(dt);} renderer.render(scene,camera); if(previewRenderer&&previewScene&&previewCamera){ if(previewPieceMesh && gameStarted && !isPaused){previewPieceMesh.rotation.y+=0.01;} previewRenderer.render(previewScene,previewCamera); } }
 
         // --- Start the game ---
         init(); // Call init, game waits for user action via welcome/menu screens
