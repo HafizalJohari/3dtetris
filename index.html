@@ -103,6 +103,18 @@
         #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; }
         #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.2rem; text-align: center; display: none; z-index: 10; pointer-events: none; font-family: var(--font-display); line-height: 1.4; }
 
+        /* --- Mobile Controls --- */
+        #mobile-controls { position: fixed; bottom: 0; left: 0; width: 100%; padding: 1rem; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; z-index: 50; }
+        @media (min-width: 768px) { #mobile-controls { display: none; } }
+        #d-pad, #action-buttons { pointer-events: auto; display: grid; gap: 0.5rem; }
+        #d-pad { width: 130px; height: 130px; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); grid-template-areas: ". up ." "left . right" ". down ."; }
+        #action-buttons { width: 130px; display: flex; flex-direction: column-reverse; align-items: center; gap: 0.75rem; }
+        .mobile-button { background-color: rgba(80, 80, 90, 0.6); border: 1px solid rgba(150, 150, 150, 0.5); border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.1s ease; padding: 0; }
+         .mobile-button:active { background-color: rgba(110, 110, 120, 0.7); }
+         .mobile-button img { width: 60%; height: 60%; filter: invert(1) brightness(0.9); }
+        #btn-move-up { grid-area: up; } #btn-move-down { grid-area: down; } #btn-move-left { grid-area: left; } #btn-move-right { grid-area: right; }
+        #action-buttons .mobile-button { width: 55px; height: 55px; border-radius: 0.75rem; }
+
     </style>
 </head>
 <body>
@@ -124,7 +136,8 @@
         <div id="help-screen-content">
             <h2>How to Play</h2>
             <h4>Goal</h4> <p>Complete the building blueprints for each mission. Falling blocks must be placed to fill the exact spots indicated by the semi-transparent 'ghost' blocks.</p>
-            <h4>Controls</h4> <ul> <li><code>W</code> / <code>S</code>: Move Forward / Backward</li> <li><code>A</code> / <code>D</code>: Move Left / Right</li> <li><code>Spacebar</code>: Rotate (Y-axis / Flat)</li> <li><code>Q</code> / <code>E</code>: Rotate (X-axis / Tumble)</li> <li><code>Z</code> / <code>C</code>: Rotate (Z-axis / Tilt)</li> <li><code>ArrowDown</code>: Speed Up Fall</li> <li><code>Tab</code>: Hard Drop</li> <li><code>P</code>: Pause / Resume</li> <li><code>R</code>: Return to Main Menu</li> <li><code>H</code>: Use AI Hint</li> <li>Mouse Drag: Rotate Camera</li> </ul>
+            <h4>Controls (Keyboard)</h4> <ul> <li><code>W</code> / <code>S</code>: Move Forward / Backward</li> <li><code>A</code> / <code>D</code>: Move Left / Right</li> <li><code>Spacebar</code>: Rotate (Y-axis / Flat)</li> <li><code>Q</code> / <code>E</code>: Rotate (X-axis / Tumble)</li> <li><code>Z</code> / <code>C</code>: Rotate (Z-axis / Tilt)</li> <li><code>ArrowDown</code>: Speed Up Fall</li> <li><code>Tab</code>: Hard Drop</li> <li><code>P</code>: Pause / Resume</li> <li><code>R</code>: Return to Main Menu</li> <li><code>H</code>: Use AI Hint</li> <li>Mouse Drag: Rotate Camera</li> </ul>
+             <h4>Controls (Mobile)</h4> <p>Use the on-screen D-Pad (left) for movement and buttons (right) for rotation and hard drop.</p>
             <h4>Gameplay</h4> <p>Use the controls to position the falling block. When a block lands on the ground or another block, it locks into place. If a locked block occupies a space shown in the blueprint, the corresponding ghost block will disappear. Complete the mission by filling all ghost block spots.</p>
             <h4>Scoring</h4> <ul> <li>+10 Points per cube locked.</li> <li>+50 Bonus points per cube locked in a correct blueprint spot.</li> <li>+500 Bonus points for completing a mission.</li> <li>Up to +1000 Time Bonus per mission based on speed.</li> <li>-200 Points penalty for using AI Hint.</li> </ul>
             <h4>AI Hint</h4> <ul> <li>Shows the best calculated spot for the *next* piece (using Y-rotation only for now).</li> <li>Target ghost blocks will blink for 5 seconds.</li> <li>Costs 200 points per use.</li> <li>Limited to 3 uses per game.</li> <li>Available only after placing 3 correct blocks in a mission.</li> <li>Activate with the 'H' key or the button.</li> </ul>
@@ -153,6 +166,20 @@
             <div id="controls-info" class="ui-panel"> <strong>Controls:</strong> WASD, QE/ZC/Space(Rot), Tab(Drop), P, R, H </div>
         </div>
         <div id="message-box">Message</div>
+
+        <div id="mobile-controls" class="md:hidden">
+            <div id="d-pad">
+                 <button id="btn-move-up" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-up.svg" alt="Up"/> </button>
+                 <button id="btn-move-left" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-left.svg" alt="Left"/> </button>
+                 <button id="btn-move-right" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-right.svg" alt="Right"/> </button>
+                 <button id="btn-move-down" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-down.svg" alt="Down"/> </button>
+            </div>
+            <div id="action-buttons">
+                 <button id="btn-hard-drop" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-down-to-line.svg" alt="Hard Drop"/> </button>
+                 <button id="btn-rotate-y" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/rotate-cw.svg" alt="Rotate"/> </button>
+            </div>
+        </div>
+
     </div>
 
     <script type="importmap">
@@ -202,13 +229,14 @@
 
 
         // DOM Elements
-        // ... (add new help elements)
+        // ... (add mobile control buttons)
         let pauseButton, restartButton, messageBox, previewCanvas, scoreDisplay, themeButtons, aiHelpButton;
         let hemiIntensitySlider, ambientIntensitySlider, dirIntensitySlider, dirYSlider;
         let hemiIntensityValueSpan, ambientIntensityValueSpan, dirIntensityValueSpan, dirYValueSpan;
         let welcomeScreen, playerNameInput, startGameButton, uiOverlay;
         let mainMenuScreen, menuStartButton, menuDemoButton, menuHelpButton;
-        let helpScreen, closeHelpButton; // New Help Elements
+        let helpScreen, closeHelpButton;
+        let btnMoveUp, btnMoveDown, btnMoveLeft, btnMoveRight, btnRotateY, btnHardDrop; // Mobile Buttons
 
 
         // --- Loaders ---
@@ -226,8 +254,22 @@
         function createPlaceholderSkybox(bC,tC,p=''){const s=256; return [`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PZ`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NZ`];}
 
         // --- Theme Definitions (with UI colors and updated Town skybox) ---
-        // ... (themes remain the same)
-        const themes = { default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } }, milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } }, cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } }, jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } }, town: { background: new THREE.Color(0x87CEEB), skybox: [ 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png' ], starfield: false, fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 }, groundColor: 0xbbbbbb, ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } } };
+        const themes = {
+            default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, groundTextureUrl: `https://placehold.co/64x64/cccccc/999999.png?text=+`, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } },
+            milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, groundTextureUrl: `https://placehold.co/64x64/222222/555555.png?text=ROCK`, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } },
+            cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, groundTextureUrl: `https://placehold.co/64x64/440044/FF00FF.png?text=GRID`, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } },
+            jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, groundTextureUrl: `https://placehold.co/64x64/556B2F/b0d0a0.png?text=DIRT`, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } },
+            town: {
+                background: new THREE.Color(0x87CEEB), // Fallback sky blue
+                skybox: [ 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png' ],
+                starfield: false,
+                fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, // Slightly adjusted fog
+                lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 },
+                groundColor: 0xbbbbbb,
+                groundTextureUrl: `https://placehold.co/64x64/bbbbbb/888888.png?text=PAVE`, // Pavement placeholder
+                ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' }
+             }
+        };
         let currentTheme = 'default';
 
         // --- Blueprint Generation Helpers --- MOVED BEFORE MISSIONS ARRAY ---
@@ -261,6 +303,8 @@
             helpScreen = document.getElementById('help-screen'); closeHelpButton = document.getElementById('close-help-button');
             // Lighting Control Elements
             hemiIntensitySlider = document.getElementById('hemi-intensity'); ambientIntensitySlider = document.getElementById('ambient-intensity'); dirIntensitySlider = document.getElementById('dir-intensity'); dirYSlider = document.getElementById('dir-y'); hemiIntensityValueSpan = document.getElementById('hemi-intensity-value'); ambientIntensityValueSpan = document.getElementById('ambient-intensity-value'); dirIntensityValueSpan = document.getElementById('dir-intensity-value'); dirYValueSpan = document.getElementById('dir-y-value');
+            // Mobile Control Buttons
+            btnMoveUp = document.getElementById('btn-move-up'); btnMoveDown = document.getElementById('btn-move-down'); btnMoveLeft = document.getElementById('btn-move-left'); btnMoveRight = document.getElementById('btn-move-right'); btnRotateY = document.getElementById('btn-rotate-y'); btnHardDrop = document.getElementById('btn-hard-drop');
 
             // --- Initialize Audio Synths ---
             setupAudio();
@@ -272,7 +316,8 @@
             hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1.0); scene.add(hemisphereLight); ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight); directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); directionalLight.position.set(8, 15, 10); directionalLight.castShadow = true; directionalLight.shadow.mapSize.width = 2048; directionalLight.shadow.mapSize.height = 2048; directionalLight.shadow.camera.near = 0.5; directionalLight.shadow.camera.far = 50; const shadowCamSize = Math.max(BOARD_WIDTH, BOARD_DEPTH)*0.8; directionalLight.shadow.camera.left = -shadowCamSize; directionalLight.shadow.camera.right = shadowCamSize; directionalLight.shadow.camera.top = shadowCamSize; directionalLight.shadow.camera.bottom = -shadowCamSize; directionalLight.shadow.bias = -0.0005; scene.add(directionalLight);
 
             controls = new OrbitControls(camera, renderer.domElement); controls.target.set(BOARD_WIDTH/2, BOARD_HEIGHT/3, BOARD_DEPTH/2); controls.enablePan = true; controls.maxPolarAngle = Math.PI/2 - 0.05; controls.minDistance = 5; controls.maxDistance = 50; controls.enableDamping = true; controls.dampingFactor = 0.05; controls.update();
-            loadTextures(); createBoardVisuals();
+            // loadTextures(); // Removed initial ground texture load
+            createBoardVisuals();
             lockedBlocksGroup.castShadow = true; lockedBlocksGroup.receiveShadow = true; scene.add(lockedBlocksGroup);
             initBoard(); initPreviewRenderer();
 
@@ -295,6 +340,13 @@
             menuHelpButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; helpScreen.style.display = 'flex'; });
             // Help Screen Close Button
             closeHelpButton.addEventListener('click', () => { helpScreen.style.display = 'none'; mainMenuScreen.style.display = 'flex'; });
+            // Mobile Control Button Listeners
+            btnMoveUp.addEventListener('click', () => movePiece(0,0,-1, true)); // W
+            btnMoveDown.addEventListener('click', () => movePiece(0,0,1, true));  // S
+            btnMoveLeft.addEventListener('click', () => movePiece(-1,0,0, true)); // A
+            btnMoveRight.addEventListener('click', () => movePiece(1,0,0, true)); // D
+            btnRotateY.addEventListener('click', rotatePieceY);                   // Space
+            btnHardDrop.addEventListener('click', hardDrop);                     // Tab
 
             animate(); // Start rendering loop
         }
@@ -305,7 +357,7 @@
         async function initializeAndStartGameplay(demo = false) { // Added demo flag
              // --- Start Audio Context ---
              // console.log("DEBUG: Attempting to start audio context..."); // DEBUG
-             if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') { try { await Tone.start(); audioReady = true; console.log('Audio context started!'); if(backgroundMusicPlayer && backgroundMusicPlayer.loaded) backgroundMusicPlayer.start(); /* Start music if loaded */ } catch (error) { console.error("Failed to start Tone.js audio context:", error); audioReady = false; } } else if (typeof Tone !== 'undefined' && Tone.context.state === 'running') { audioReady = true; if(backgroundMusicPlayer && backgroundMusicPlayer.loaded) backgroundMusicPlayer.start(); /* Start music if loaded */ } else { console.warn("Tone.js library not loaded."); audioReady = false; }
+             if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') { try { await Tone.start(); audioReady = true; console.log('Audio context started!'); if(backgroundMusicPlayer && backgroundMusicPlayer.loaded && !isDemoMode) backgroundMusicPlayer.start(); /* Start music if loaded */ } catch (error) { console.error("Failed to start Tone.js audio context:", error); audioReady = false; } } else if (typeof Tone !== 'undefined' && Tone.context.state === 'running') { audioReady = true; if(backgroundMusicPlayer && backgroundMusicPlayer.loaded && !isDemoMode) backgroundMusicPlayer.start(); /* Start music if loaded */ } else { console.warn("Tone.js library not loaded."); audioReady = false; }
              // ---
 
             uiOverlay.style.display = 'block'; // Show game UI
@@ -344,53 +396,69 @@
         }
 
 
-        async function setupAudio() {
-             try {
-                 if(typeof Tone === 'undefined'){ console.error("Tone is not defined!"); audioReady = false; return;}
-                 synthMove = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 }, volume: -20 }).toDestination();
-                 synthRotate = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.1 }, volume: -18 }).toDestination();
-                 synthRotateX = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.002, decay: 0.07, sustain: 0, release: 0.1 }, volume: -19 }).toDestination();
-                 synthRotateZ = new Tone.Synth({ oscillator: { type: 'pulse' , width: 0.3}, envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.1 }, volume: -19 }).toDestination();
-                 synthLock = new Tone.MembraneSynth({ pitchDecay: 0.02, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 }, volume: -12 }).toDestination();
-                 synthCorrectLock = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -15 }).toDestination();
-                 synthMissionComplete = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.4 }, volume: -10 }).toDestination();
-                 synthHardDrop = new Tone.MembraneSynth({ pitchDecay: 0.005, octaves: 4, envelope: { attack: 0.001, decay: 0.15, sustain: 0, release: 0.1 }, volume: -10 }).toDestination();
-
-                 // --- Background Music Setup ---
-                 // Replace this URL with the actual URL of your hosted MP3/OGG/WAV file
-                 const musicUrl = "https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/Falling%20Blocks.mp3";
-                 backgroundMusicPlayer = new Tone.Player({
-                     url: musicUrl,
-                     loop: true,
-                     autostart: false, // Start it after Tone.start() is called
-                     volume: -18, // Adjust volume as needed (-18dB is quite soft)
-                     onload: () => {
-                         console.log("Background music loaded successfully!");
-                     },
-                     onerror: (error) => {
-                         console.error("Error loading background music:", error);
-                         // Handle error, maybe disable music features
-                     }
-                 }).toDestination();
-                 // --- End Background Music Setup ---
-
-                 console.log("Audio synths created.");
-             } catch (error) {
-                  console.error("Error creating Tone.js synths:", error);
-                  audioReady = false;
-             }
-         }
+        async function setupAudio() { /* ... same as before ... */ try { if(typeof Tone === 'undefined'){ console.error("Tone is not defined!"); audioReady = false; return;} synthMove = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 }, volume: -20 }).toDestination(); synthRotate = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.1 }, volume: -18 }).toDestination(); synthRotateX = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.002, decay: 0.07, sustain: 0, release: 0.1 }, volume: -19 }).toDestination(); synthRotateZ = new Tone.Synth({ oscillator: { type: 'pulse' , width: 0.3}, envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.1 }, volume: -19 }).toDestination(); synthLock = new Tone.MembraneSynth({ pitchDecay: 0.02, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 }, volume: -12 }).toDestination(); synthCorrectLock = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }, volume: -15 }).toDestination(); synthMissionComplete = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.4 }, volume: -10 }).toDestination(); synthHardDrop = new Tone.MembraneSynth({ pitchDecay: 0.005, octaves: 4, envelope: { attack: 0.001, decay: 0.15, sustain: 0, release: 0.1 }, volume: -10 }).toDestination(); const musicUrl = "https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/Falling%20Blocks.mp3"; backgroundMusicPlayer = new Tone.Player({ url: musicUrl, loop: true, autostart: false, volume: -18, onload: () => { console.log("Background music loaded successfully!"); }, onerror: (error) => { console.error("Error loading background music:", error); } }).toDestination(); console.log("Audio synths created."); } catch (error) { console.error("Error creating Tone.js synths:", error); audioReady = false; } }
         function initPreviewRenderer() { /* ... same as before ... */ previewScene=new THREE.Scene(); previewScene.background=null; const a=PREVIEW_CANVAS_SIZE/PREVIEW_CANVAS_SIZE; const fS=4*CUBE_SIZE; previewCamera=new THREE.OrthographicCamera(fS*a/-2,fS*a/2,fS/2,fS/-2,0.1,100); previewCamera.position.set(0,0,5); previewCamera.lookAt(0,0,0); previewRenderer=new THREE.WebGLRenderer({canvas:previewCanvas,antialias:true,alpha:true}); previewRenderer.setSize(PREVIEW_CANVAS_SIZE,PREVIEW_CANVAS_SIZE); previewRenderer.setPixelRatio(window.devicePixelRatio); previewRenderer.toneMapping=THREE.ACESFilmicToneMapping; previewRenderer.toneMappingExposure=1.0; const pA=new THREE.AmbientLight(0xffffff,1.0); previewScene.add(pA); const pL=new THREE.DirectionalLight(0xffffff,1.5); pL.position.set(1,2,3); previewScene.add(pL); }
-        function loadTextures() { /* ... same as before ... */ const gTU=`https://placehold.co/64x64/cccccc/999999.png?text=+`; groundTexture=textureLoader.load(gTU,(t)=>{t.wrapS=THREE.RepeatWrapping; t.wrapT=THREE.RepeatWrapping; t.repeat.set(BOARD_WIDTH,BOARD_DEPTH); console.log("GT loaded."); groundPlane=scene.getObjectByName("groundPlane"); if(groundPlane){groundPlane.material.map=t; groundPlane.material.needsUpdate=true;}},undefined,(e)=>{console.error('Error loading GT:',e);}); }
+        function loadTextures() { /* No longer loads ground texture here */ }
         function initBoard() { /* ... same as before ... */ board=Array(BOARD_WIDTH).fill(null).map(()=>Array(BOARD_HEIGHT).fill(null).map(()=>Array(BOARD_DEPTH).fill(0))); }
-        function createBoardVisuals() { /* ... same as before ... */ const gH=new THREE.GridHelper(Math.max(BOARD_WIDTH,BOARD_DEPTH),Math.max(BOARD_WIDTH,BOARD_DEPTH),0x888888,0x444444); gH.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2+0.01,BOARD_DEPTH/2-CUBE_SIZE/2); scene.add(gH); const gG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_DEPTH*CUBE_SIZE); const gM=new THREE.MeshStandardMaterial({color:0xaaaaaa,map:groundTexture,side:THREE.DoubleSide,roughness:0.8,metalness:0.2}); groundPlane=new THREE.Mesh(gG,gM); groundPlane.name="groundPlane"; groundPlane.rotation.x=-Math.PI/2; groundPlane.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); groundPlane.receiveShadow=true; scene.add(groundPlane); const wM=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.05,side:THREE.DoubleSide}); const bWG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const bW=new THREE.Mesh(bWG,wM); bW.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,-CUBE_SIZE/2); scene.add(bW); const lWG=new THREE.PlaneGeometry(BOARD_DEPTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const lW=new THREE.Mesh(lWG,wM); lW.position.set(-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); lW.rotation.y=Math.PI/2; scene.add(lW); const rW=lW.clone(); rW.position.x=BOARD_WIDTH-CUBE_SIZE/2; scene.add(rW); }
+        function createBoardVisuals() { /* ... same as before, but ground material map is initially null ... */ const gH=new THREE.GridHelper(Math.max(BOARD_WIDTH,BOARD_DEPTH),Math.max(BOARD_WIDTH,BOARD_DEPTH),0x888888,0x444444); gH.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2+0.01,BOARD_DEPTH/2-CUBE_SIZE/2); scene.add(gH); const gG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_DEPTH*CUBE_SIZE); const gM=new THREE.MeshStandardMaterial({color:0xaaaaaa,map:null,side:THREE.DoubleSide,roughness:0.8,metalness:0.2}); groundPlane=new THREE.Mesh(gG,gM); groundPlane.name="groundPlane"; groundPlane.rotation.x=-Math.PI/2; groundPlane.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); groundPlane.receiveShadow=true; scene.add(groundPlane); const wM=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.05,side:THREE.DoubleSide}); const bWG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const bW=new THREE.Mesh(bWG,wM); bW.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,-CUBE_SIZE/2); scene.add(bW); const lWG=new THREE.PlaneGeometry(BOARD_DEPTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const lW=new THREE.Mesh(lWG,wM); lW.position.set(-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); lW.rotation.y=Math.PI/2; scene.add(lW); const rW=lW.clone(); rW.position.x=BOARD_WIDTH-CUBE_SIZE/2; scene.add(rW); }
 
         // --- Starfield ---
         function createStarfield(){ if(starfield)removeStarfield(); const v=[]; for(let i=0;i<STARFIELD_COUNT;i++){ const th=Math.random()*Math.PI*2; const ph=Math.acos((Math.random()*2)-1); const r=STARFIELD_RADIUS*Math.cbrt(Math.random()); const x=r*Math.sin(ph)*Math.cos(th); const y=r*Math.sin(ph)*Math.sin(th); const z=r*Math.cos(ph); v.push(x,y,z); } const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); const m=new THREE.PointsMaterial({color:0xffffff,size:0.15,sizeAttenuation:true,transparent:true,opacity:0.8}); starfield=new THREE.Points(g,m); starfield.name="starfield"; scene.add(starfield); console.log("Starfield created."); }
         function removeStarfield(){ if(starfield){ scene.remove(starfield); starfield.geometry.dispose(); starfield.material.dispose(); starfield=null; console.log("Starfield removed."); } }
 
         // --- Theme Application ---
-        function applyTheme(themeName) { /* ... same as before ... */ const theme=themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;} console.log(`Applying theme: ${themeName}`); currentTheme=themeName; removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;} if(theme.starfield){scene.background=theme.background; createStarfield();}else if(theme.skybox&&theme.skybox.length===6){scene.background=theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}else{scene.background=theme.background;} if(theme.fog){if(!scene.fog){scene.fog=new THREE.Fog(theme.fog.color,theme.fog.near,theme.fog.far);}else{scene.fog.color.set(theme.fog.color); scene.fog.near=theme.fog.near; scene.fog.far=theme.fog.far;}}else{scene.fog=null;} if(theme.lights){hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);} if(groundPlane&&groundPlane.material){groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate=true;} const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');} if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);}); }
+        function applyTheme(themeName) {
+             const theme = themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;}
+             console.log(`Applying theme: ${themeName}`); currentTheme=themeName;
+             removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;}
+
+             // Apply Background/Starfield/Skybox
+             if (theme.starfield) { scene.background = theme.background; createStarfield(); }
+             else if (theme.skybox && theme.skybox.length === 6) { scene.background = theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}
+             else { scene.background = theme.background; }
+
+             // Update Fog
+             if (theme.fog) { if (!scene.fog) { scene.fog = new THREE.Fog(theme.fog.color, theme.fog.near, theme.fog.far); } else { scene.fog.color.set(theme.fog.color); scene.fog.near = theme.fog.near; scene.fog.far = theme.fog.far; } } else { scene.fog = null; }
+
+             // Update Lights & Controls
+             if (theme.lights) { hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);}
+
+             // --- Update Ground Texture ---
+             if (groundPlane && groundPlane.material) {
+                 if (theme.groundTextureUrl) {
+                     textureLoader.load(
+                         theme.groundTextureUrl,
+                         (texture) => { // onLoad
+                             texture.wrapS = THREE.RepeatWrapping;
+                             texture.wrapT = THREE.RepeatWrapping;
+                             texture.repeat.set(BOARD_WIDTH, BOARD_DEPTH);
+                             groundPlane.material.map = texture;
+                             groundPlane.material.color.set(0xffffff); // Use texture color primarily
+                             groundPlane.material.needsUpdate = true;
+                             console.log(`Ground texture loaded for ${themeName}`);
+                         },
+                         undefined, // onProgress
+                         (error) => { // onError
+                             console.error(`Error loading ground texture for ${themeName}:`, error);
+                             groundPlane.material.map = null; // Fallback to color
+                             groundPlane.material.color.setHex(theme.groundColor);
+                             groundPlane.material.needsUpdate = true;
+                         }
+                     );
+                 } else {
+                     // No texture URL, just set color
+                     groundPlane.material.map = null;
+                     groundPlane.material.color.setHex(theme.groundColor);
+                     groundPlane.material.needsUpdate = true;
+                 }
+             }
+             // ---
+
+             // Update UI Theme
+             const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');}
+             // Update active theme button
+             if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);});
+        }
 
 
         // --- Mission Handling --- (Unchanged)
