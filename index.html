@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Tetris Builder</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root { /* Define CSS Variables for UI Theming */
             --panel-bg: rgba(50, 50, 50, 0.85);
@@ -17,161 +20,91 @@
             --button-hover-bg: #374151; /* gray-700 */
             --button-active-bg: #1f2937; /* gray-800 */
             --accent-color: #3b82f6; /* blue-500 */
+            --font-main: 'Inter', sans-serif; /* Keep Inter for body */
+            --font-display: 'Press Start 2P', cursive; /* Use block font for UI */
         }
 
-        body { margin: 0; overflow: hidden; font-family: 'Inter', sans-serif; background-color: #111827; /* Darker base bg */ }
+        body { margin: 0; overflow: hidden; font-family: var(--font-main); background-color: #111827; }
         #game-container { position: relative; width: 100vw; height: 100vh; }
         #canvas { display: block; }
-        #ui-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 1rem; color: var(--text-color); pointer-events: none;
-        }
-        .ui-panel { /* Common style for UI boxes */
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            padding: 0.75rem 1rem; /* Increased padding */
-            border-radius: 0.75rem; /* More rounded (lg) */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
-            pointer-events: auto; width: fit-content; margin-bottom: 0.75rem; /* Increased margin */
-            position: absolute; /* Keep absolute for now, manage layout via containers */
-            transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth transitions */
-        }
 
-        /* --- Panel Positions --- */
-        #mission-info {
-            line-height: 1.5; /* Better spacing */
-            top: 1rem; left: 1rem;
-        }
-        #controls-info { /* Stays bottom-left */
-            bottom: 1rem; left: 1rem; font-size: 0.85rem; /* Slightly smaller */
-        }
-        .ui-controls { /* Top-right buttons container */
-           pointer-events: auto; display: flex; gap: 0.5rem;
-           position: absolute; top: 1rem; right: 1rem;
-        }
-        /* Container for Right-Side Panels */
-        #right-column {
-            position: absolute;
-            top: calc(1rem + 40px + 0.5rem); /* Below top buttons */
-            right: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end; /* Align panels to the right */
-            gap: 0.75rem; /* Space between panels */
-            pointer-events: none; /* Allow clicks through container */
-            width: 224px; /* Fixed width for the column (w-56) */
-        }
-        /* Make panels inside the right column fill the container */
-        #right-column .ui-panel {
-            position: static; /* Let flexbox handle positioning */
-            width: 100%; /* Make panels fill the container width */
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-        }
+        /* --- Welcome Screen --- */
+        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-color-heading); text-align: center; padding: 2rem; font-family: var(--font-display); }
+        #welcome-screen h1 { font-size: 1.8rem; line-height: 1.4; font-weight: normal; margin-bottom: 1rem; color: #fff; }
+        #welcome-screen p { font-size: 0.8rem; line-height: 1.5; color: var(--text-color-muted); margin-bottom: 2rem; }
+        #player-name { padding: 0.75rem 1rem; font-size: 0.8rem; border-radius: 0.5rem; border: 1px solid var(--panel-border); background-color: rgba(255, 255, 255, 0.1); color: var(--text-color-heading); margin-bottom: 1.5rem; width: 100%; max-width: 300px; text-align: center; font-family: var(--font-main); }
+        #player-name::placeholder { color: var(--text-color-muted); }
+        #start-game-button { padding: 0.75rem 2rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); }
+         #start-game-button:hover { background-color: #2563eb; }
+         #start-game-button:active { transform: scale(0.98); }
 
-         #preview-box { text-align: center; }
-         #theme-selector {
-             /* Use Grid for theme buttons */
-             display: grid;
-             grid-template-columns: repeat(3, 1fr); /* Create 3 equal columns */
-             gap: 0.5rem; /* Space between buttons */
-             padding: 0.75rem; /* Adjust padding */
-         }
-         #lighting-controls { font-size: 0.8rem; padding: 0.75rem; }
-         /* --- End Panel Positions --- */
+        #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; color: var(--text-color); pointer-events: none; display: none; font-family: var(--font-display); font-size: 8px; }
+        .ui-panel { background-color: var(--panel-bg); border: 1px solid var(--panel-border); padding: 0.75rem 1rem; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1); pointer-events: auto; width: fit-content; margin-bottom: 0.75rem; position: absolute; transition: background-color 0.3s ease, border-color 0.3s ease; }
 
+        /* Panel Positions */
+        #mission-info { line-height: 1.5; top: 1rem; left: 1rem; }
+        #controls-info { bottom: 1rem; left: 1rem; font-size: 1em; }
+        .ui-controls { pointer-events: auto; display: flex; gap: 0.5rem; position: absolute; top: 1rem; right: 1rem; }
+        #right-column { position: absolute; top: calc(1rem + 40px + 0.5rem); right: 1rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; pointer-events: none; width: 224px; }
+        #right-column .ui-panel { position: static; width: 100%; box-sizing: border-box; }
+        #preview-box { text-align: center; }
+        #theme-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; padding: 0.75rem; }
+        #lighting-controls { font-size: 1em; padding: 0.75rem; }
 
-         /* Headings and Text */
-         .ui-panel h2 { /* Mission Name */
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 600; /* font-semibold */
-            color: var(--text-color-heading);
-            margin-bottom: 0.25rem;
-         }
-          .ui-panel h3 { /* Panel Titles (Next, Theme, Lighting) */
-             width: 100%; margin-bottom: 0.75rem; font-weight: 600;
-             font-size: 0.9rem; color: var(--text-color-muted); text-align: left;
-             border-bottom: 1px solid var(--panel-border); /* Add separator */
-             padding-bottom: 0.25rem;
-         }
-         #score-display { font-weight: 700; font-size: 1.1em; color: #facc15; } /* Yellow score */
+        /* Headings and Text */
+        .ui-panel h2 { font-size: 1.2em; font-weight: normal; color: var(--text-color-heading); margin-bottom: 0.25rem; line-height: 1.2; }
+        .ui-panel h3 { width: 100%; margin-bottom: 0.75rem; font-weight: normal; font-size: 1em; color: var(--text-color-muted); text-align: left; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.25rem; line-height: 1.2; }
+        #score-display { font-weight: normal; font-size: 1.3em; color: #facc15; }
+        .ui-panel p { font-size: 1em; line-height: 1.4; margin-bottom: 0.25rem;}
+        #controls-info strong { font-weight: normal; }
 
-         /* Buttons */
-         .game-button {
-             padding: 0.5rem 1rem; border-radius: 0.5rem; /* md */
-             background-color: var(--button-bg); color: var(--text-color-heading); font-weight: 600;
-             border: 1px solid var(--button-border); height: 40px;
-             box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); /* shadow-md */
-             transition: all 0.15s ease-out; cursor: pointer;
-             display: inline-flex; /* Align text vertically */
-             align-items: center;
-             justify-content: center;
-         }
-         .game-button:hover { background-color: var(--button-hover-bg); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); } /* shadow-lg */
-         .game-button:active { background-color: var(--button-active-bg); transform: scale(0.98); }
+        /* Buttons */
+        .game-button { padding: 0.5rem 1rem; border-radius: 0.5rem; background-color: var(--button-bg); color: var(--text-color-heading); font-weight: normal; border: 1px solid var(--button-border); height: 40px; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); transition: all 0.15s ease-out; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 1em; white-space: nowrap; }
+        .game-button:hover:not(:disabled) { background-color: var(--button-hover-bg); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+        .game-button:active:not(:disabled) { background-color: var(--button-active-bg); transform: scale(0.98); }
+        .game-button:disabled { background-color: #374151; border-color: #4b5563; color: #9ca3af; cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.6; }
+        #ai-help-button { min-width: 100px; /* Give AI button some base width */ }
 
-         .theme-button {
-             padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 0.375rem;
-             background-color: #5a6578; color: white;
-             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; cursor: pointer;
-             border: 1px solid #718096;
-             text-align: center; /* Center text in grid cell */
-             width: 100%; /* Make button fill grid cell */
-         }
-         .theme-button:hover { background-color: #3d4758; }
-         .theme-button.active { background-color: var(--accent-color); border-color: var(--accent-color); font-weight: 600; }
+        .theme-button { padding: 0.5rem 0.6rem; font-size: 1em; border-radius: 0.375rem; background-color: #5a6578; color: white; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; cursor: pointer; border: 1px solid #718096; text-align: center; width: 100%; line-height: 1.1; }
+        .theme-button:hover { background-color: #3d4758; }
+        .theme-button.active { background-color: var(--accent-color); border-color: var(--accent-color); font-weight: normal; }
 
         /* Lighting Controls Styling */
-         #lighting-controls label {
-             display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 0.75rem;
-         }
-         #lighting-controls div { /* Add spacing between controls */
-             margin-bottom: 0.5rem;
-             display: flex; /* Align label, slider, value */
-             align-items: center;
-             justify-content: space-between;
-         }
-         #lighting-controls label { flex-basis: 40%; flex-shrink: 0; } /* Give label fixed space */
-         #lighting-controls input[type="range"] {
-             flex-grow: 1; /* Allow slider to take remaining space */
-             width: auto; /* Override fixed width */
-             height: 5px;
-             cursor: pointer;
-             accent-color: var(--accent-color); /* Color the slider track/thumb */
-             margin: 0 0.5rem; /* Add horizontal margin */
-         }
-         #lighting-controls span { /* For displaying slider value */
-             display: inline-block;
-             min-width: 2.5em; /* Ensure space for value */
-             text-align: right;
-             color: var(--text-color-heading);
-             font-size: 0.75rem;
-         }
+        #lighting-controls label { display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 1em; line-height: 1.2; }
+        #lighting-controls div { margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+        #lighting-controls label { flex-basis: 45%; flex-shrink: 0; }
+        #lighting-controls input[type="range"] { flex-grow: 1; width: auto; height: 8px; cursor: pointer; accent-color: var(--accent-color); margin: 0 0.5rem; }
+        #lighting-controls span { display: inline-block; min-width: 2.5em; text-align: right; color: var(--text-color-heading); font-size: 1em; }
 
-
-         #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; /* Center canvas */ }
-
-         #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.75rem; text-align: center; display: none; z-index: 10; pointer-events: none; }
+        #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; }
+        #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.2rem; text-align: center; display: none; z-index: 10; pointer-events: none; font-family: var(--font-display); line-height: 1.4; }
 
     </style>
 </head>
 <body>
+    <div id="welcome-screen">
+        <h1>3D Tetris Builder</h1>
+        <p>Construct the blueprints before the blocks pile up!</p>
+        <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+        <button id="start-game-button">Start Building!</button>
+    </div>
+
     <div id="game-container">
         <canvas id="canvas"></canvas>
-        <div id="ui-overlay">
-            <div id="mission-info" class="ui-panel">
+        <div id="ui-overlay"> <div id="mission-info" class="ui-panel">
                 <h2>Mission: <span id="mission-name">Loading...</span></h2>
                 <p>Blocks Placed: <span id="blocks-placed">0</span> / <span id="blocks-target">0</span></p>
                 <p>Score: <span id="score-display">0</span></p>
             </div>
 
             <div class="ui-controls">
-                 <button id="pause-button" class="game-button">Pause</button>
-                 <button id="restart-button" class="game-button">Restart Mission</button>
+                 <button id="ai-help-button" class="game-button">AI Hint (3)</button> <button id="pause-button" class="game-button">Pause</button>
+                 <button id="restart-button" class="game-button">Restart</button>
             </div>
 
             <div id="right-column">
                  <div id="preview-box" class="ui-panel">
-                     <h3>Next Block</h3>
+                     <h3>Next</h3>
                      <canvas id="preview-canvas"></canvas>
                  </div>
                  <div id="theme-selector" class="ui-panel">
@@ -183,46 +116,22 @@
                      <button class="theme-button" data-theme="town">Town</button>
                  </div>
                  <div id="lighting-controls" class="ui-panel">
-                     <h3>Lighting</h3>
-                     <div>
-                         <label for="hemi-intensity">Hemi:</label>
-                         <input type="range" id="hemi-intensity" name="hemi-intensity" min="0" max="3" step="0.1">
-                         <span id="hemi-intensity-value">1.0</span>
-                     </div>
-                     <div>
-                         <label for="ambient-intensity">Ambient:</label>
-                         <input type="range" id="ambient-intensity" name="ambient-intensity" min="0" max="2" step="0.1">
-                         <span id="ambient-intensity-value">1.0</span>
-                     </div>
-                     <div>
-                         <label for="dir-intensity">Sun Int:</label>
-                         <input type="range" id="dir-intensity" name="dir-intensity" min="0" max="5" step="0.1">
-                         <span id="dir-intensity-value">1.0</span>
-                     </div>
-                     <div>
-                         <label for="dir-y">Sun Angle:</label>
-                         <input type="range" id="dir-y" name="dir-y" min="1" max="30" step="1">
-                         <span id="dir-y-value">15</span>
-                     </div>
+                     <h3>Lights</h3>
+                     <div><label for="hemi-intensity">Hemi:</label><input type="range" id="hemi-intensity" name="hemi-intensity" min="0" max="3" step="0.1"><span id="hemi-intensity-value">1.0</span></div>
+                     <div><label for="ambient-intensity">Amb:</label><input type="range" id="ambient-intensity" name="ambient-intensity" min="0" max="2" step="0.1"><span id="ambient-intensity-value">1.0</span></div>
+                     <div><label for="dir-intensity">Sun:</label><input type="range" id="dir-intensity" name="dir-intensity" min="0" max="5" step="0.1"><span id="dir-intensity-value">1.0</span></div>
+                     <div><label for="dir-y">Angle:</label><input type="range" id="dir-y" name="dir-y" min="1" max="30" step="1"><span id="dir-y-value">15</span></div>
                  </div>
             </div>
 
-
             <div id="controls-info" class="ui-panel">
-                <strong>Controls:</strong> Arrow Keys (Move X/Z), W/S (Move Z), Up Arrow (Rotate Y), P (Pause/Resume), R (Restart)
-            </div>
-
+                <strong>Controls:</strong> Arrows, W/S, Up, P, R, H(Hint) </div>
         </div>
         <div id="message-box">Message</div>
     </div>
 
     <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
-            }
-        }
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/" } }
     </script>
 
     <script type="module">
@@ -237,6 +146,11 @@
         const POINTS_PER_CUBE = 10; const POINTS_PER_CORRECT_CUBE_BONUS = 50; const POINTS_MISSION_COMPLETE = 500;
         const MAX_TIME_BONUS = 1000; const MAX_TIME_ALLOWED_PER_MISSION = 120;
         const STARFIELD_RADIUS = 200; const STARFIELD_COUNT = 5000;
+        const AI_HINT_USES = 3; // Max AI hint uses per game
+        const AI_HINT_COST = 200; // Score cost per use
+        const AI_HINT_ACTIVATE_THRESHOLD = 3; // Blocks needed before hint is available
+        const HINT_BLINK_DURATION = 5000; // ms for hint blinking
+        const HINT_BLINK_INTERVAL = 300; // ms between blinks
 
         // --- Game State ---
         let scene, camera, renderer, controls, clock;
@@ -246,6 +160,11 @@
         let targetBlockCount = 0; let placedTargetBlocks = 0;
         let isGameOver = false; let isPaused = false; let activeParticles = [];
         let nextPieceData = null; let totalScore = 0; let missionStartTime = 0;
+        let gameStarted = false; let playerName = "Player";
+        let aiHintUsesLeft = AI_HINT_USES; // AI Hint state
+        let isBlinkingHint = false; // Is hint currently blinking?
+        let blinkingGhostsInfo = []; // { mesh: ghostMesh, originalOpacity: number }
+        let blinkIntervalId = null; // Interval ID for blinking
 
         // --- Scene Elements (for theme changes) ---
         let hemisphereLight, ambientLight, directionalLight, groundPlane;
@@ -255,9 +174,10 @@
         let previewScene, previewCamera, previewRenderer, previewPieceMesh = null;
 
         // DOM Elements
-        let pauseButton, restartButton, messageBox, previewCanvas, scoreDisplay, themeButtons;
+        let pauseButton, restartButton, messageBox, previewCanvas, scoreDisplay, themeButtons, aiHelpButton;
         let hemiIntensitySlider, ambientIntensitySlider, dirIntensitySlider, dirYSlider;
         let hemiIntensityValueSpan, ambientIntensityValueSpan, dirIntensityValueSpan, dirYValueSpan;
+        let welcomeScreen, playerNameInput, startGameButton, uiOverlay;
 
 
         // --- Loaders ---
@@ -271,42 +191,7 @@
         function createPlaceholderSkybox(bC,tC,p=''){const s=256; return [`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PZ`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NZ`];}
 
         // --- Theme Definitions (with UI colors) ---
-        const themes = {
-            default: {
-                background: new THREE.Color(0x333340), skybox: null, starfield: false,
-                fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 },
-                lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 },
-                groundColor: 0xaaaaaa,
-                ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } // Blueish gray UI
-            },
-            milkyway: {
-                background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null,
-                lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 },
-                groundColor: 0x222222,
-                ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } // Dark blue/purple UI
-            },
-            cyberpunk: {
-                background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false,
-                fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 },
-                lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 },
-                groundColor: 0x440044,
-                ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } // Neon magenta/cyan UI
-            },
-            jungle: {
-                background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false,
-                fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 },
-                lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 },
-                groundColor: 0x556B2F,
-                ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } // Earthy green UI
-            },
-            town: {
-                background: new THREE.Color(0x87CEEB), skybox: createPlaceholderSkybox('87CEEB', 'FFFFFF', 'TOWN_'), starfield: false,
-                fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.0, far: BOARD_DEPTH * 4.0 },
-                lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 },
-                groundColor: 0xbbbbbb,
-                ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } // Light gray/blue UI
-            }
-        };
+        const themes = { default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } }, milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } }, cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } }, jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } }, town: { background: new THREE.Color(0x87CEEB), skybox: createPlaceholderSkybox('87CEEB', 'FFFFFF', 'TOWN_'), starfield: false, fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.0, far: BOARD_DEPTH * 4.0 }, lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 }, groundColor: 0xbbbbbb, ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } } };
         let currentTheme = 'default';
 
         // --- Mission Definitions --- (Shortened)
@@ -320,15 +205,16 @@
         function init() {
             clock = new THREE.Clock();
             // Get UI Elements
+            uiOverlay = document.getElementById('ui-overlay');
             pauseButton = document.getElementById('pause-button'); restartButton = document.getElementById('restart-button'); messageBox = document.getElementById('message-box');
             previewCanvas = document.getElementById('preview-canvas'); scoreDisplay = document.getElementById('score-display');
             themeButtons = document.querySelectorAll('.theme-button');
+            aiHelpButton = document.getElementById('ai-help-button'); // Get AI button
+            // Welcome Screen Elements
+            welcomeScreen = document.getElementById('welcome-screen'); playerNameInput = document.getElementById('player-name'); startGameButton = document.getElementById('start-game-button');
             // Lighting Control Elements
-            hemiIntensitySlider = document.getElementById('hemi-intensity'); ambientIntensitySlider = document.getElementById('ambient-intensity');
-            dirIntensitySlider = document.getElementById('dir-intensity'); dirYSlider = document.getElementById('dir-y');
-            hemiIntensityValueSpan = document.getElementById('hemi-intensity-value'); ambientIntensityValueSpan = document.getElementById('ambient-intensity-value');
-            dirIntensityValueSpan = document.getElementById('dir-intensity-value'); dirYValueSpan = document.getElementById('dir-y-value');
-
+            hemiIntensitySlider = document.getElementById('hemi-intensity'); ambientIntensitySlider = document.getElementById('ambient-intensity'); dirIntensitySlider = document.getElementById('dir-intensity'); dirYSlider = document.getElementById('dir-y');
+            hemiIntensityValueSpan = document.getElementById('hemi-intensity-value'); ambientIntensityValueSpan = document.getElementById('ambient-intensity-value'); dirIntensityValueSpan = document.getElementById('dir-intensity-value'); dirYValueSpan = document.getElementById('dir-y-value');
 
             // --- Main Scene Setup ---
             scene = new THREE.Scene();
@@ -345,26 +231,48 @@
             lockedBlocksGroup.castShadow = true; lockedBlocksGroup.receiveShadow = true; scene.add(lockedBlocksGroup);
             initBoard(); initPreviewRenderer();
 
-            // --- Apply Default Theme ---
-            applyTheme('default'); // Also sets initial slider values
+            // --- Apply Default Theme (before game starts) ---
+            applyTheme('default');
 
-            // --- Start Game ---
-            totalScore = 0; nextPieceData = determineNextPiece();
-            loadMission(currentMissionIndex);
+            // --- Don't Start Game Yet ---
+            // loadMission called in startGame
 
             // --- Event Listeners ---
-            window.addEventListener('resize', onWindowResize, false); document.addEventListener('keydown', onKeyDown); document.addEventListener('keyup', onKeyUp);
-            pauseButton.addEventListener('click', togglePause); restartButton.addEventListener('click', restartMission);
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            pauseButton.addEventListener('click', togglePause);
+            restartButton.addEventListener('click', restartMission);
+            aiHelpButton.addEventListener('click', useAiHint); // Changed function name
             themeButtons.forEach(button => { button.addEventListener('click', () => { applyTheme(button.dataset.theme); }); });
-
             // Lighting Control Listeners
             hemiIntensitySlider.addEventListener('input', (e) => { const v=parseFloat(e.target.value); hemisphereLight.intensity=v; hemiIntensityValueSpan.textContent=v.toFixed(1); });
             ambientIntensitySlider.addEventListener('input', (e) => { const v=parseFloat(e.target.value); ambientLight.intensity=v; ambientIntensityValueSpan.textContent=v.toFixed(1); });
             dirIntensitySlider.addEventListener('input', (e) => { const v=parseFloat(e.target.value); directionalLight.intensity=v; dirIntensityValueSpan.textContent=v.toFixed(1); });
             dirYSlider.addEventListener('input', (e) => { const v=parseFloat(e.target.value); directionalLight.position.y=v; dirYValueSpan.textContent=v.toFixed(0); });
+            // Start Game Button Listener
+            startGameButton.addEventListener('click', startGame);
+            playerNameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') startGame(); });
 
-            animate();
+            animate(); // Start rendering loop
         }
+
+        function startGame() {
+            const name = playerNameInput.value.trim();
+            if (name) { playerName = name; console.log(`Player Name: ${playerName}`); }
+            else { console.log("No name entered, using default."); }
+
+            welcomeScreen.style.display = 'none';
+            uiOverlay.style.display = 'block';
+
+            gameStarted = true; isPaused = false; isGameOver = false;
+            totalScore = 0; currentMissionIndex = 0;
+            aiHintUsesLeft = AI_HINT_USES; // Reset AI uses on new game
+            nextPieceData = determineNextPiece();
+            loadMission(currentMissionIndex); // This now calls updateUI which updates AI button
+            console.log("Game Started!");
+        }
+
 
         function initPreviewRenderer() { /* ... same as before ... */ previewScene=new THREE.Scene(); previewScene.background=null; const a=PREVIEW_CANVAS_SIZE/PREVIEW_CANVAS_SIZE; const fS=4*CUBE_SIZE; previewCamera=new THREE.OrthographicCamera(fS*a/-2,fS*a/2,fS/2,fS/-2,0.1,100); previewCamera.position.set(0,0,5); previewCamera.lookAt(0,0,0); previewRenderer=new THREE.WebGLRenderer({canvas:previewCanvas,antialias:true,alpha:true}); previewRenderer.setSize(PREVIEW_CANVAS_SIZE,PREVIEW_CANVAS_SIZE); previewRenderer.setPixelRatio(window.devicePixelRatio); previewRenderer.toneMapping=THREE.ACESFilmicToneMapping; previewRenderer.toneMappingExposure=1.0; const pA=new THREE.AmbientLight(0xffffff,1.0); previewScene.add(pA); const pL=new THREE.DirectionalLight(0xffffff,1.5); pL.position.set(1,2,3); previewScene.add(pL); }
         function loadTextures() { /* ... same as before ... */ const gTU=`https://placehold.co/64x64/cccccc/999999.png?text=+`; groundTexture=textureLoader.load(gTU,(t)=>{t.wrapS=THREE.RepeatWrapping; t.wrapT=THREE.RepeatWrapping; t.repeat.set(BOARD_WIDTH,BOARD_DEPTH); console.log("GT loaded."); groundPlane=scene.getObjectByName("groundPlane"); if(groundPlane){groundPlane.material.map=t; groundPlane.material.needsUpdate=true;}},undefined,(e)=>{console.error('Error loading GT:',e);}); }
@@ -376,90 +284,52 @@
         function removeStarfield(){ if(starfield){ scene.remove(starfield); starfield.geometry.dispose(); starfield.material.dispose(); starfield=null; console.log("Starfield removed."); } }
 
         // --- Theme Application ---
-        function applyTheme(themeName) {
-            const theme = themes[themeName];
-            if (!theme) { console.warn(`Theme "${themeName}" not found.`); return; }
-            console.log(`Applying theme: ${themeName}`);
-            currentTheme = themeName;
-
-            // Cleanup previous
-            removeStarfield();
-            if (scene.background && scene.background.isTexture) { scene.background = null; }
-
-            // Apply new Background/Starfield
-            if (theme.starfield) {
-                scene.background = theme.background; createStarfield();
-            } else if (theme.skybox && theme.skybox.length === 6) {
-                scene.background = theme.background; // Fallback
-                cubeTextureLoader.load( theme.skybox, (t) => { scene.background = t; console.log(`${themeName} skybox loaded.`); }, undefined, (e) => { console.error(`Skybox error ${themeName}:`, e); scene.background = theme.background; } );
-            } else { scene.background = theme.background; }
-
-            // Update Fog
-            if (theme.fog) { if (!scene.fog) { scene.fog = new THREE.Fog(theme.fog.color, theme.fog.near, theme.fog.far); } else { scene.fog.color.set(theme.fog.color); scene.fog.near = theme.fog.near; scene.fog.far = theme.fog.far; } } else { scene.fog = null; }
-
-            // Update Lights & Controls
-            if (theme.lights) {
-                hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity = theme.lights.hemiIntensity;
-                ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity = theme.lights.ambientIntensity;
-                directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity = theme.lights.dirIntensity;
-                directionalLight.position.y = theme.lights.dirY;
-
-                // Update sliders to match theme
-                hemiIntensitySlider.value = theme.lights.hemiIntensity; hemiIntensityValueSpan.textContent = theme.lights.hemiIntensity.toFixed(1);
-                ambientIntensitySlider.value = theme.lights.ambientIntensity; ambientIntensityValueSpan.textContent = theme.lights.ambientIntensity.toFixed(1);
-                dirIntensitySlider.value = theme.lights.dirIntensity; dirIntensityValueSpan.textContent = theme.lights.dirIntensity.toFixed(1);
-                dirYSlider.value = theme.lights.dirY; dirYValueSpan.textContent = theme.lights.dirY.toFixed(0);
-            }
-
-            // Update Ground
-            if (groundPlane && groundPlane.material) { groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate = true; }
-
-            // --- Update UI Theme via CSS Variables ---
-            const rootStyle = document.documentElement.style;
-            if(theme.ui) {
-                rootStyle.setProperty('--panel-bg', theme.ui.panelBg);
-                rootStyle.setProperty('--panel-border', theme.ui.panelBorder);
-                rootStyle.setProperty('--text-color', theme.ui.textColor);
-                rootStyle.setProperty('--text-color-muted', theme.ui.textColorMuted);
-                rootStyle.setProperty('--text-color-heading', theme.ui.textColorHeading);
-                rootStyle.setProperty('--accent-color', theme.ui.accent);
-                // Add button colors if defined in theme.ui
-                rootStyle.setProperty('--button-bg', theme.ui.buttonBg || '#4b5563');
-                rootStyle.setProperty('--button-border', theme.ui.buttonBorder || '#6b7280');
-                rootStyle.setProperty('--button-hover-bg', theme.ui.buttonHoverBg || '#374151');
-            }
-            // ---
-
-            // Update active theme button style
-            themeButtons.forEach(button => { button.classList.toggle('active', button.dataset.theme === themeName); });
-        }
+        function applyTheme(themeName) { /* ... same as before ... */ const theme=themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;} console.log(`Applying theme: ${themeName}`); currentTheme=themeName; removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;} if(theme.starfield){scene.background=theme.background; createStarfield();}else if(theme.skybox&&theme.skybox.length===6){scene.background=theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}else{scene.background=theme.background;} if(theme.fog){if(!scene.fog){scene.fog=new THREE.Fog(theme.fog.color,theme.fog.near,theme.fog.far);}else{scene.fog.color.set(theme.fog.color); scene.fog.near=theme.fog.near; scene.fog.far=theme.fog.far;}}else{scene.fog=null;} if(theme.lights){hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);} if(groundPlane&&groundPlane.material){groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate=true;} const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');} if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);}); }
 
 
         // --- Mission Handling --- (Unchanged)
-        function loadMission(mI, isR=false){ if(fallInterval)clearInterval(fallInterval); fallInterval=null; if(!isR&&mI>=missions.length){showMessage(`All Missions Complete! Final Score: ${totalScore}`);gameOver(true);return;} if(mI>=missions.length){mI=missions.length-1;} const m=missions[mI]; console.log(`Loading Mission: ${m.name}`); clearBoard(); clearGhostBlocks(); if(currentPiece){scene.remove(currentPiece.mesh);currentPiece=null;} placedTargetBlocks=0; targetBlockCount=m.b.length; displayBlueprint(m.b); document.getElementById('mission-name').textContent=m.name; isGameOver=false; isPaused=false; pauseButton.textContent='Pause'; hideMessage(); missionStartTime=clock.getElapsedTime(); updateUI(); if(!isR||!nextPieceData){nextPieceData=determineNextPiece();} updatePreview(nextPieceData); spawnPiece(); if(currentPiece&&!isGameOver){currentFallSpeed=FALL_SPEED_NORMAL;startGameLoop();}else if(isGameOver){console.log("GO on load.");} }
-        function displayBlueprint(b){ const gm=new THREE.MeshStandardMaterial({color:0xaaaaaa,transparent:true,opacity:0.25,roughness:0.9}); const gg=new THREE.BoxGeometry(CUBE_SIZE*0.95,CUBE_SIZE*0.95,CUBE_SIZE*0.95); b.forEach(c=>{ if(c.x<0||c.x>=BOARD_WIDTH||c.y<0||c.y>=BOARD_HEIGHT||c.z<0||c.z>=BOARD_DEPTH){console.warn("BP coord out:",c);return;} const gc=new THREE.Mesh(gg,gm.clone()); gc.position.set(c.x*CUBE_SIZE,c.y*CUBE_SIZE,c.z*CUBE_SIZE); gc.userData.isGhost=true; gc.userData.originalPosition={x:c.x,y:c.y,z:c.z}; scene.add(gc); ghostBlocks.push(gc);}); targetBlockCount=ghostBlocks.length; updateUI();}
-        function clearGhostBlocks() { ghostBlocks.forEach(g => { scene.remove(g); }); ghostBlocks = []; }
-        function checkMissionCompletion(){ if(isGameOver)return false; if(placedTargetBlocks>=targetBlockCount&&targetBlockCount>0){ const mN=missions[currentMissionIndex].name; let mCB=POINTS_MISSION_COMPLETE; const tT=clock.getElapsedTime()-missionStartTime; const tBR=Math.max(0,1.0-(tT/MAX_TIME_ALLOWED_PER_MISSION)); let tB=Math.round(MAX_TIME_BONUS*tBR); totalScore+=mCB; totalScore+=tB; updateUI(); showMessage(`Mission ${mN} Complete!\nScore +${mCB} +${tB} (Time)`,3500); const cP=new THREE.Vector3(BOARD_WIDTH/2*CUBE_SIZE,0,BOARD_DEPTH/2*CUBE_SIZE); createParticleEffect(cP,0xffd700,150,1.5); currentMissionIndex++; if(fallInterval)clearInterval(fallInterval); fallInterval=null; setTimeout(()=>{loadMission(currentMissionIndex);},3600); return true; } return false; }
+        function loadMission(mI, isR=false){ if(!gameStarted) return; if(fallInterval)clearInterval(fallInterval); fallInterval=null; if(!isR&&mI>=missions.length){showMessage(`All Missions Complete! Final Score: ${totalScore}`);gameOver(true);return;} if(mI>=missions.length){mI=missions.length-1;} const m=missions[mI]; console.log(`Loading Mission: ${m.name}`); clearBoard(); clearGhostBlocks(); if(currentPiece){scene.remove(currentPiece.mesh);currentPiece=null;} placedTargetBlocks=0; targetBlockCount=m.b.length; displayBlueprint(m.b); document.getElementById('mission-name').textContent=m.name; isGameOver=false; isPaused=false; pauseButton.textContent='Pause'; hideMessage(); missionStartTime=clock.getElapsedTime(); updateUI(); if(!isR||!nextPieceData){nextPieceData=determineNextPiece();} updatePreview(nextPieceData); spawnPiece(); if(currentPiece&&!isGameOver){currentFallSpeed=FALL_SPEED_NORMAL;startGameLoop();}else if(isGameOver){console.log("GO on load.");} }
+        function displayBlueprint(b){ const gm=new THREE.MeshStandardMaterial({color:0xaaaaaa,transparent:true,opacity:0.25,roughness:0.9}); const gg=new THREE.BoxGeometry(CUBE_SIZE*0.95,CUBE_SIZE*0.95,CUBE_SIZE*0.95); b.forEach(c=>{ if(c.x<0||c.x>=BOARD_WIDTH||c.y<0||c.y>=BOARD_HEIGHT||c.z<0||c.z>=BOARD_DEPTH){console.warn("BP coord out:",c);return;} const gc=new THREE.Mesh(gg,gm.clone()); gc.position.set(c.x*CUBE_SIZE,c.y*CUBE_SIZE,c.z*CUBE_SIZE); gc.userData.isGhost=true; gc.userData.originalPosition={x:c.x,y:c.y,z:c.z}; gc.userData.baseOpacity = gm.opacity; // Store base opacity for blinking
+             scene.add(gc); ghostBlocks.push(gc);}); targetBlockCount=ghostBlocks.length; updateUI();}
+        function clearGhostBlocks() { stopBlinkingHint(); ghostBlocks.forEach(g => { scene.remove(g); }); ghostBlocks = []; } // Stop blinking on clear
+        function checkMissionCompletion(){ if(isGameOver || !gameStarted)return false; if(placedTargetBlocks>=targetBlockCount&&targetBlockCount>0){ stopBlinkingHint(); // Stop hint if mission complete
+            const mN=missions[currentMissionIndex].name; let mCB=POINTS_MISSION_COMPLETE; const tT=clock.getElapsedTime()-missionStartTime; const tBR=Math.max(0,1.0-(tT/MAX_TIME_ALLOWED_PER_MISSION)); let tB=Math.round(MAX_TIME_BONUS*tBR); totalScore+=mCB; totalScore+=tB; updateUI(); showMessage(`Mission ${mN} Complete!\nScore +${mCB} +${tB} (Time)`,3500); const cP=new THREE.Vector3(BOARD_WIDTH/2*CUBE_SIZE,0,BOARD_DEPTH/2*CUBE_SIZE); createParticleEffect(cP,0xffd700,150,1.5); currentMissionIndex++; if(fallInterval)clearInterval(fallInterval); fallInterval=null; setTimeout(()=>{loadMission(currentMissionIndex);},3600); return true; } return false; }
 
-        // --- Game Loop & Piece Logic --- (Unchanged)
-        function startGameLoop(){ if(isPaused||isGameOver)return; if(fallInterval)clearInterval(fallInterval); fallInterval=setInterval(()=>{if(!isPaused&&!isGameOver&&currentPiece){movePiece(0,-1,0);}},currentFallSpeed); console.log("Timer start/reset:",currentFallSpeed); }
+        // --- Game Loop & Piece Logic --- (Add gameStarted checks)
+        function startGameLoop(){ if(isPaused||isGameOver||!gameStarted)return; if(fallInterval)clearInterval(fallInterval); fallInterval=setInterval(()=>{if(!isPaused&&!isGameOver&&currentPiece&&gameStarted){movePiece(0,-1,0);}},currentFallSpeed); console.log("Timer start/reset:",currentFallSpeed); }
         function stopGameLoop(){ if(fallInterval){clearInterval(fallInterval); fallInterval=null; console.log("Timer stop.");} }
-        function resetFallTimer(){ if(!isPaused&&!isGameOver){startGameLoop();} }
+        function resetFallTimer(){ if(!isPaused&&!isGameOver&&gameStarted){startGameLoop();} }
         function determineNextPiece(){ const k=TETROMINO_KEYS[Math.floor(Math.random()*TETROMINO_KEYS.length)]; const d=TETROMINOES[k]; return {type:k, color:d.c, shape:JSON.parse(JSON.stringify(d.s))}; }
-        function spawnPiece(){ if(isGameOver||isPaused)return; if(!nextPieceData){console.warn("nextPD null."); nextPieceData=determineNextPiece();} const cPD=nextPieceData; nextPieceData=determineNextPiece(); updatePreview(nextPieceData); const sX=Math.floor(BOARD_WIDTH/2); const sY=BOARD_HEIGHT-1; const sZ=Math.floor(BOARD_DEPTH/2); const pG=new THREE.Group(); const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:cPD.color,metalness:0.3,roughness:0.5}); cPD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); c.castShadow=true; c.receiveShadow=false; pG.add(c); }); currentPiece={mesh:pG,shape:cPD.shape,x:sX,y:sY,z:sZ,rotationY:0}; currentPiece.mesh.position.set(sX*CUBE_SIZE,sY*CUBE_SIZE,sZ*CUBE_SIZE); if(!isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,currentPiece.shape)){console.log("GO on spawn!"); gameOver(); currentPiece=null; if(nextPieceData)updatePreview(nextPieceData); return;} scene.add(currentPiece.mesh); console.log("Spawned:",cPD.type,"Next:",nextPieceData.type); }
-        function movePiece(dx,dy,dz){ if(!currentPiece||isPaused||isGameOver)return; const nX=currentPiece.x+dx; const nY=currentPiece.y+dy; const nZ=currentPiece.z+dz; if(isValidMove(nX,nY,nZ,currentPiece.shape)){ currentPiece.x=nX; currentPiece.y=nY; currentPiece.z=nZ; currentPiece.mesh.position.set(currentPiece.x*CUBE_SIZE,currentPiece.y*CUBE_SIZE,currentPiece.z*CUBE_SIZE); }else if(dy<0){ lockPiece(); if(!isGameOver){ spawnPiece(); if(currentFallSpeed!==FALL_SPEED_NORMAL){ currentFallSpeed=FALL_SPEED_NORMAL; resetFallTimer(); } } } }
-        function rotatePieceY(){ if(!currentPiece||isPaused||isGameOver)return; const ax=new THREE.Vector3(0,1,0); const ang=Math.PI/2; const qu=new THREE.Quaternion().setFromAxisAngle(ax,ang); const rs=currentPiece.shape.map(o=>{ const v=new THREE.Vector3(o[0],o[1],o[2]).applyQuaternion(qu); return [Math.round(v.x),Math.round(v.y),Math.round(v.z)]; }); if(isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,rs)){ currentPiece.mesh.applyQuaternion(qu); currentPiece.shape=rs; currentPiece.rotationY=(currentPiece.rotationY+ang)%(2*Math.PI); console.log("Rotated"); }else{ console.log("Rot blocked"); } }
-        function isValidMove(bX,bY,bZ,sh){ for(const o of sh){ const wX=bX+o[0]; const wY=bY+o[1]; const wZ=bZ+o[2]; if(wX<0||wX>=BOARD_WIDTH||wY<0||wZ<0||wZ>=BOARD_DEPTH)return false; if(wY>=BOARD_HEIGHT)continue; if(board[wX][wY][wZ]!==0)return false; } return true; }
-        function lockPiece(){ if(!currentPiece||isGameOver)return; console.log("Locking:",currentPiece.x,currentPiece.y,currentPiece.z); let mPM=false; const pM=currentPiece.mesh.children[0].material; let sGTL=0; currentPiece.shape.forEach(o=>{ const wX=currentPiece.x+o[0]; const wY=currentPiece.y+o[1]; const wZ=currentPiece.z+o[2]; if(wX>=0&&wX<BOARD_WIDTH&&wY>=0&&wY<BOARD_HEIGHT&&wZ>=0&&wZ<BOARD_DEPTH){ const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=pM.clone(); const lC=new THREE.Mesh(geo,mat); lC.position.set(wX*CUBE_SIZE,wY*CUBE_SIZE,wZ*CUBE_SIZE); lC.castShadow=true; lC.receiveShadow=true; lockedBlocksGroup.add(lC); board[wX][wY][wZ]=1; totalScore+=POINTS_PER_CUBE; sGTL+=POINTS_PER_CUBE; const fGI=ghostBlocks.findIndex(g=>g.visible&&g.userData.originalPosition.x===wX&&g.userData.originalPosition.y===wY&&g.userData.originalPosition.z===wZ); if(fGI!==-1){ ghostBlocks[fGI].visible=false; placedTargetBlocks++; mPM=true; console.log("BP filled!"); totalScore+=POINTS_PER_CORRECT_CUBE_BONUS; sGTL+=POINTS_PER_CORRECT_CUBE_BONUS; const pP=lC.position.clone(); createParticleEffect(pP,mat.color); const oE=mat.emissive.getHex(); mat.emissive.setHex(0xffffff); mat.needsUpdate=true; setTimeout(()=>{if(lC.parent){mat.emissive.setHex(oE); mat.needsUpdate=true;}},LOCK_FLASH_DURATION); } }else{ console.warn("Lock out:",wX,wY,wZ); if(wY>=BOARD_HEIGHT){console.log("Lock above - GO."); if(currentPiece&&currentPiece.mesh.parent)scene.remove(currentPiece.mesh); currentPiece=null; gameOver(); return;} } }); if(currentPiece&&currentPiece.mesh.parent){scene.remove(currentPiece.mesh);} currentPiece=null; console.log(`Score gain lock: ${sGTL}`); updateUI(); if(!isGameOver&&mPM){checkMissionCompletion();} }
-        function clearBoard(){ initBoard(); while(lockedBlocksGroup.children.length>0){ const o=lockedBlocksGroup.children[0]; if(o.geometry)o.geometry.dispose(); if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose()); else o.material.dispose();} lockedBlocksGroup.remove(o); } activeParticles.forEach(p=>scene.remove(p.mesh)); activeParticles=[]; removeStarfield(); /* Ensure starfield is cleared on board clear */ }
-        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); if(!isC)showMessage(`Game Over! Final Score: ${totalScore}`); }
+        function spawnPiece(){ if(isGameOver||isPaused||!gameStarted)return; if(!nextPieceData){console.warn("nextPD null."); nextPieceData=determineNextPiece();} const cPD=nextPieceData; nextPieceData=determineNextPiece(); updatePreview(nextPieceData); const sX=Math.floor(BOARD_WIDTH/2); const sY=BOARD_HEIGHT-1; const sZ=Math.floor(BOARD_DEPTH/2); const pG=new THREE.Group(); const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:cPD.color,metalness:0.3,roughness:0.5}); cPD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); c.castShadow=true; c.receiveShadow=false; pG.add(c); }); currentPiece={mesh:pG,shape:cPD.shape,x:sX,y:sY,z:sZ,rotationY:0}; currentPiece.mesh.position.set(sX*CUBE_SIZE,sY*CUBE_SIZE,sZ*CUBE_SIZE); if(!isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,currentPiece.shape)){console.log("GO on spawn!"); gameOver(); currentPiece=null; if(nextPieceData)updatePreview(nextPieceData); return;} scene.add(currentPiece.mesh); console.log("Spawned:",cPD.type,"Next:",nextPieceData.type); }
+        function movePiece(dx,dy,dz){ if(!currentPiece||isPaused||isGameOver||!gameStarted)return; stopBlinkingHint(); // Stop hint on manual move
+            const nX=currentPiece.x+dx; const nY=currentPiece.y+dy; const nZ=currentPiece.z+dz; if(isValidMove(nX,nY,nZ,currentPiece.shape)){ currentPiece.x=nX; currentPiece.y=nY; currentPiece.z=nZ; currentPiece.mesh.position.set(currentPiece.x*CUBE_SIZE,currentPiece.y*CUBE_SIZE,currentPiece.z*CUBE_SIZE); }else if(dy<0){ lockPiece(); if(!isGameOver){ spawnPiece(); if(currentFallSpeed!==FALL_SPEED_NORMAL){ currentFallSpeed=FALL_SPEED_NORMAL; resetFallTimer(); } } } }
+        function rotatePieceY(){ if(!currentPiece||isPaused||isGameOver||!gameStarted)return; stopBlinkingHint(); // Stop hint on manual move
+            const ax=new THREE.Vector3(0,1,0); const ang=Math.PI/2; const qu=new THREE.Quaternion().setFromAxisAngle(ax,ang); const rs=currentPiece.shape.map(o=>{ const v=new THREE.Vector3(o[0],o[1],o[2]).applyQuaternion(qu); return [Math.round(v.x),Math.round(v.y),Math.round(v.z)]; }); if(isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,rs)){ currentPiece.mesh.applyQuaternion(qu); currentPiece.shape=rs; currentPiece.rotationY=(currentPiece.rotationY+ang)%(2*Math.PI); console.log("Rotated"); }else{ console.log("Rot blocked"); } }
+        function isValidMove(bX,bY,bZ,sh){ if(!gameStarted) return false; for(const o of sh){ const wX=bX+o[0]; const wY=bY+o[1]; const wZ=bZ+o[2]; if(wX<0||wX>=BOARD_WIDTH||wY<0||wZ<0||wZ>=BOARD_DEPTH)return false; if(wY>=BOARD_HEIGHT)continue; if(board[wX][wY][wZ]!==0)return false; } return true; }
+        function lockPiece(){ if(!currentPiece||isGameOver||!gameStarted)return; stopBlinkingHint(); // Stop hint when piece locks
+            console.log("Locking:",currentPiece.x,currentPiece.y,currentPiece.z); let mPM=false; const pM=currentPiece.mesh.children[0].material; let sGTL=0; currentPiece.shape.forEach(o=>{ const wX=currentPiece.x+o[0]; const wY=currentPiece.y+o[1]; const wZ=currentPiece.z+o[2]; if(wX>=0&&wX<BOARD_WIDTH&&wY>=0&&wY<BOARD_HEIGHT&&wZ>=0&&wZ<BOARD_DEPTH){ const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=pM.clone(); const lC=new THREE.Mesh(geo,mat); lC.position.set(wX*CUBE_SIZE,wY*CUBE_SIZE,wZ*CUBE_SIZE); lC.castShadow=true; lC.receiveShadow=true; lockedBlocksGroup.add(lC); board[wX][wY][wZ]=1; totalScore+=POINTS_PER_CUBE; sGTL+=POINTS_PER_CUBE; const fGI=ghostBlocks.findIndex(g=>g.visible&&g.userData.originalPosition.x===wX&&g.userData.originalPosition.y===wY&&g.userData.originalPosition.z===wZ); if(fGI!==-1){ ghostBlocks[fGI].visible=false; placedTargetBlocks++; mPM=true; console.log("BP filled!"); totalScore+=POINTS_PER_CORRECT_CUBE_BONUS; sGTL+=POINTS_PER_CORRECT_CUBE_BONUS; const pP=lC.position.clone(); createParticleEffect(pP,mat.color); const oE=mat.emissive.getHex(); mat.emissive.setHex(0xffffff); mat.needsUpdate=true; setTimeout(()=>{if(lC.parent){mat.emissive.setHex(oE); mat.needsUpdate=true;}},LOCK_FLASH_DURATION); } }else{ console.warn("Lock out:",wX,wY,wZ); if(wY>=BOARD_HEIGHT){console.log("Lock above - GO."); if(currentPiece&&currentPiece.mesh.parent)scene.remove(currentPiece.mesh); currentPiece=null; gameOver(); return;} } }); if(currentPiece&&currentPiece.mesh.parent){scene.remove(currentPiece.mesh);} currentPiece=null; console.log(`Score gain lock: ${sGTL}`); updateUI(); if(!isGameOver&&mPM){checkMissionCompletion();} }
+        function clearBoard(){ initBoard(); while(lockedBlocksGroup.children.length>0){ const o=lockedBlocksGroup.children[0]; if(o.geometry)o.geometry.dispose(); if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose()); else o.material.dispose();} lockedBlocksGroup.remove(o); } activeParticles.forEach(p=>scene.remove(p.mesh)); activeParticles=[]; removeStarfield(); }
+        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); stopBlinkingHint(); if(!isC)showMessage(`Game Over! Final Score: ${totalScore}`); updateUI(); }
 
-        // --- UI Functions --- (Unchanged)
-        function updateUI(){ document.getElementById('blocks-placed').textContent=placedTargetBlocks; document.getElementById('blocks-target').textContent=targetBlockCount; scoreDisplay.textContent=totalScore; }
+        // --- UI Functions ---
+        function updateUI(){
+            if(!gameStarted) return;
+            document.getElementById('blocks-placed').textContent=placedTargetBlocks;
+            document.getElementById('blocks-target').textContent=targetBlockCount;
+            scoreDisplay.textContent=totalScore;
+            // Update AI Hint Button
+            if (aiHelpButton) {
+                aiHelpButton.textContent = `AI Hint (${aiHintUsesLeft})`;
+                // Enable conditions: game running, hints left, enough blocks placed, next piece exists
+                aiHelpButton.disabled = (aiHintUsesLeft <= 0 || isPaused || isGameOver || !nextPieceData || placedTargetBlocks < AI_HINT_ACTIVATE_THRESHOLD);
+            }
+            if(pauseButton) pauseButton.disabled = isGameOver;
+            if(restartButton) restartButton.disabled = false;
+        }
         function showMessage(t,d=3000){ messageBox.textContent=t; messageBox.style.display='block'; if(d>0){setTimeout(()=>{if(messageBox.textContent===t)hideMessage();},d);} }
         function hideMessage(){ messageBox.style.display='none'; }
-        function togglePause(){ if(isGameOver)return; isPaused=!isPaused; console.log("Paused:",isPaused); if(isPaused){ stopGameLoop(); showMessage("Paused",0); pauseButton.textContent='Resume'; }else{ hideMessage(); pauseButton.textContent='Pause'; if(currentPiece)startGameLoop(); else{ console.log("Resume no piece, spawn."); spawnPiece(); if(currentPiece&&!isGameOver)startGameLoop(); } } }
-        function restartMission(){ console.log("Restart mission..."); stopGameLoop(); isGameOver=false; isPaused=false; hideMessage(); pauseButton.textContent='Pause'; loadMission(currentMissionIndex,true); }
+        function togglePause(){ if(isGameOver||!gameStarted)return; isPaused=!isPaused; console.log("Paused:",isPaused); if(isPaused){ stopGameLoop(); stopBlinkingHint(); showMessage("Paused",0); pauseButton.textContent='Resume'; }else{ hideMessage(); pauseButton.textContent='Pause'; if(currentPiece)startGameLoop(); else{ console.log("Resume no piece, spawn."); spawnPiece(); if(currentPiece&&!isGameOver)startGameLoop(); } } updateUI(); }
+        function restartMission(){ if(!gameStarted) return; console.log("Restart mission..."); stopGameLoop(); stopBlinkingHint(); isGameOver=false; isPaused=false; hideMessage(); pauseButton.textContent='Pause'; loadMission(currentMissionIndex,true); }
 
         // --- Preview Update --- (Unchanged)
         function updatePreview(pD){ if(!previewScene)return; if(previewPieceMesh){previewScene.remove(previewPieceMesh);} if(!pD)return; const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:pD.color,metalness:0.3,roughness:0.5}); previewPieceMesh=new THREE.Group(); pD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); previewPieceMesh.add(c); }); const box=new THREE.Box3().setFromObject(previewPieceMesh); const center=box.getCenter(new THREE.Vector3()); previewPieceMesh.position.sub(center); previewScene.add(previewPieceMesh); console.log("Preview:",pD.type); }
@@ -468,16 +338,173 @@
         function createParticleEffect(p,c=0xffffff,co=PARTICLE_COUNT,l=PARTICLE_LIFESPAN){ const pg=new THREE.BufferGeometry(); const v=[]; const ve=[]; const st=[]; for(let i=0;i<co;i++){ v.push(0,0,0); const th=Math.random()*Math.PI*2; const ph=Math.acos((Math.random()*2)-1); const sp=1+Math.random()*3; ve.push(Math.sin(ph)*Math.cos(th)*sp,Math.cos(ph)*sp,Math.sin(ph)*Math.sin(th)*sp); st.push(clock.getElapsedTime()); } pg.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); pg.setAttribute('velocity',new THREE.Float32BufferAttribute(ve,3)); pg.setAttribute('startTime',new THREE.Float32BufferAttribute(st,1)); const pm=new THREE.PointsMaterial({color:c,size:0.1,transparent:true,opacity:0.8,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending}); const pt=new THREE.Points(pg,pm); pt.position.copy(p); scene.add(pt); activeParticles.push({mesh:pt,geometry:pg,material:pm,startTime:clock.getElapsedTime(),lifespan:l}); }
         function updateParticles(dt){ const ct=clock.getElapsedTime(); for(let i=activeParticles.length-1;i>=0;i--){ const s=activeParticles[i]; const et=ct-s.startTime; if(et>s.lifespan){ scene.remove(s.mesh); s.geometry.dispose(); s.material.dispose(); activeParticles.splice(i,1); continue; } const ps=s.geometry.attributes.position; const vs=s.geometry.attributes.velocity; for(let j=0;j<ps.count;j++){ const ix=j*3; const pST=s.geometry.attributes.startTime.array[j]; const pET=ct-pST; ps.array[ix]+=vs.array[ix]*dt; ps.array[ix+1]+=vs.array[ix+1]*dt-0.5*9.8*pET*dt; ps.array[ix+2]+=vs.array[ix+2]*dt; } ps.needsUpdate=true; s.material.opacity=0.8*(1.0-(et/s.lifespan)); s.material.needsUpdate=true; } }
 
-        // --- Event Handlers --- (Unchanged)
+        // --- AI Hint Logic ---
+        function findBestPlacementForNextPiece() {
+            if (!nextPieceData || !ghostBlocks.length) return null; // Check next piece data
+
+            let bestScore = -1;
+            let bestPlacement = null;
+            const pieceShape = nextPieceData.shape; // Use next piece shape
+
+            const visibleGhostCoordsMap = new Map(); // Use Map for faster lookup
+             ghostBlocks.forEach((g, index) => {
+                 if (g.visible) {
+                     const pos = g.userData.originalPosition;
+                     const key = `${pos.x},${pos.y},${pos.z}`;
+                     visibleGhostCoordsMap.set(key, { mesh: g, index: index }); // Store mesh reference
+                 }
+             });
+
+            if (visibleGhostCoordsMap.size === 0) return null;
+
+            const yAxis = new THREE.Vector3(0, 1, 0);
+
+            for (let rot = 0; rot < 4; rot++) {
+                const angle = rot * Math.PI / 2;
+                const quaternion = new THREE.Quaternion().setFromAxisAngle(yAxis, angle);
+                const rotatedShape = pieceShape.map(offset => {
+                    const vec = new THREE.Vector3(offset[0], offset[1], offset[2]).applyQuaternion(quaternion);
+                    return [Math.round(vec.x), Math.round(vec.y), Math.round(vec.z)];
+                });
+
+                for (let x = 0; x < BOARD_WIDTH; x++) {
+                    for (let z = 0; z < BOARD_DEPTH; z++) {
+                        let finalY = BOARD_HEIGHT;
+                        while (finalY >= 0) {
+                            finalY--;
+                            if (!isValidMove(x, finalY, z, rotatedShape)) {
+                                finalY++; break;
+                            }
+                        }
+                        if (finalY >= BOARD_HEIGHT || !isValidMove(x, finalY, z, rotatedShape)) continue;
+
+                        let filledGhostsCount = 0;
+                        let filledGhostMeshes = []; // Store meshes to blink
+                        rotatedShape.forEach(offset => {
+                            const worldX = x + offset[0];
+                            const worldY = finalY + offset[1];
+                            const worldZ = z + offset[2];
+                            const key = `${worldX},${worldY},${worldZ}`;
+                            if (visibleGhostCoordsMap.has(key)) {
+                                filledGhostsCount++;
+                                filledGhostMeshes.push(visibleGhostCoordsMap.get(key).mesh);
+                            }
+                        });
+
+                        if (filledGhostsCount > 0) {
+                            const placementScore = filledGhostsCount * 1000 - finalY;
+                            if (placementScore > bestScore) {
+                                bestScore = placementScore;
+                                bestPlacement = { x, y: finalY, z, rotation: angle, shape: rotatedShape, filledMeshes: filledGhostMeshes };
+                            }
+                        }
+                    }
+                }
+            }
+            console.log("Best hint placement found:", bestPlacement);
+            return bestPlacement;
+        }
+
+        function startBlinkingHint(ghostMeshesToBlink) {
+            stopBlinkingHint(); // Stop any previous blinking
+            if (!ghostMeshesToBlink || ghostMeshesToBlink.length === 0) return;
+
+            isBlinkingHint = true;
+            blinkingGhostsInfo = ghostMeshesToBlink.map(mesh => ({
+                mesh: mesh,
+                originalOpacity: mesh.userData.baseOpacity || 0.25 // Use stored or default
+            }));
+
+            let blinkOn = false;
+            blinkIntervalId = setInterval(() => {
+                blinkOn = !blinkOn;
+                blinkingGhostsInfo.forEach(info => {
+                    if (info.mesh && info.mesh.material) { // Check if mesh still exists
+                        info.mesh.material.opacity = blinkOn ? 0.8 : info.originalOpacity * 0.5; // Blink between bright and dim
+                        info.mesh.material.emissive.setHex(blinkOn ? 0xffffff : 0x000000); // Blink emissive
+                        info.mesh.material.needsUpdate = true;
+                    }
+                });
+            }, HINT_BLINK_INTERVAL);
+
+            // Automatically stop blinking after duration
+            setTimeout(stopBlinkingHint, HINT_BLINK_DURATION);
+        }
+
+        function stopBlinkingHint() {
+            if (blinkIntervalId) {
+                clearInterval(blinkIntervalId);
+                blinkIntervalId = null;
+            }
+            // Restore original appearance
+            blinkingGhostsInfo.forEach(info => {
+                 if (info.mesh && info.mesh.material) { // Check if mesh still exists
+                    info.mesh.material.opacity = info.originalOpacity;
+                    info.mesh.material.emissive.setHex(0x000000);
+                    info.mesh.material.needsUpdate = true;
+                 }
+            });
+            blinkingGhostsInfo = [];
+            isBlinkingHint = false;
+        }
+
+        function useAiHint() {
+            // Check conditions for using hint
+            if (isGameOver || isPaused || !gameStarted || !nextPieceData || aiHintUsesLeft <= 0 || placedTargetBlocks < AI_HINT_ACTIVATE_THRESHOLD) {
+                console.log("AI Hint conditions not met.");
+                updateUI(); // Ensure button state is correct
+                return;
+            }
+
+            console.log("Attempting AI Hint...");
+            const placement = findBestPlacementForNextPiece(); // Analyze NEXT piece
+
+            if (placement && placement.filledMeshes.length > 0) {
+                aiHintUsesLeft--;
+                totalScore -= AI_HINT_COST;
+                console.log(`AI Hint used. Uses left: ${aiHintUsesLeft}. Score: ${totalScore}`);
+
+                // Start blinking the target ghost blocks
+                startBlinkingHint(placement.filledMeshes);
+                showMessage("Hint Activated!", HINT_BLINK_DURATION); // Show message for blink duration
+
+            } else {
+                console.log("AI Hint couldn't find a useful placement for the next piece.");
+                showMessage("AI Hint: No spot found!", 1500);
+            }
+            updateUI(); // Update score and button state
+        }
+
+
+        // --- Event Handlers --- (Add 'h' key for AI Hint)
         function onWindowResize(){ camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); }
-        function onKeyDown(e){ if(e.key==='r'||e.key==='R'){restartMission();return;} if(e.key==='p'||e.key==='P'){togglePause();return;} if(isGameOver||isPaused||!currentPiece)return; switch(e.key){ case 'ArrowLeft':movePiece(-1,0,0);break; case 'ArrowRight':movePiece(1,0,0);break; case 'ArrowDown':if(currentFallSpeed!==FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_FAST;resetFallTimer();}movePiece(0,-1,0);break; case 'ArrowUp':rotatePieceY();break; case 'w':case 'W':movePiece(0,0,-1);break; case 's':case 'S':movePiece(0,0,1);break; } }
-        function onKeyUp(e){ if(isGameOver||isPaused)return; if(e.key==='ArrowDown'){if(currentFallSpeed===FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_NORMAL;resetFallTimer();}} }
+        function onKeyDown(e){
+            if(!gameStarted) return;
+            if(e.key==='r'||e.key==='R'){restartMission();return;}
+            if(e.key==='p'||e.key==='P'){togglePause();return;}
+            if(e.key==='h'||e.key==='H'){useAiHint(); return;} // Changed function call
+
+            if(isGameOver||isPaused||!currentPiece)return;
+            // Stop blinking hint if player makes a move
+            if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'w', 'W', 's', 'S'].includes(e.key)) {
+                stopBlinkingHint();
+            }
+            switch(e.key){
+                case 'ArrowLeft':movePiece(-1,0,0);break;
+                case 'ArrowRight':movePiece(1,0,0);break;
+                case 'ArrowDown':if(currentFallSpeed!==FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_FAST;resetFallTimer();}movePiece(0,-1,0);break;
+                case 'ArrowUp':rotatePieceY();break;
+                case 'w':case 'W':movePiece(0,0,-1);break;
+                case 's':case 'S':movePiece(0,0,1);break;
+            }
+        }
+        function onKeyUp(e){ if(!gameStarted || isGameOver||isPaused)return; if(e.key==='ArrowDown'){if(currentFallSpeed===FALL_SPEED_FAST){currentFallSpeed=FALL_SPEED_NORMAL;resetFallTimer();}} }
 
         // --- Animation Loop --- (Unchanged)
-        function animate() { requestAnimationFrame(animate); const dt=clock.getDelta(); controls.update(); if(!isPaused){updateParticles(dt);} renderer.render(scene,camera); if(previewRenderer&&previewScene&&previewCamera){ if(previewPieceMesh&&!isPaused){previewPieceMesh.rotation.y+=0.01;} previewRenderer.render(previewScene,previewCamera); } }
+        function animate() { requestAnimationFrame(animate); const dt=clock.getDelta(); controls.update(); if(gameStarted && !isPaused){updateParticles(dt);} renderer.render(scene,camera); if(previewRenderer&&previewScene&&previewCamera){ if(previewPieceMesh && gameStarted && !isPaused){previewPieceMesh.rotation.y+=0.01;} previewRenderer.render(previewScene,previewCamera); } }
 
         // --- Start the game ---
-        init();
+        init(); // Call init, but game waits for user action
 
     </script>
 </body>
