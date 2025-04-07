@@ -93,12 +93,31 @@
         .theme-button:hover { background-color: #3d4758; }
         .theme-button.active { background-color: var(--accent-color); border-color: var(--accent-color); font-weight: normal; }
 
-        /* Lighting Controls Styling */
-        #lighting-controls label { display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 1em; line-height: 1.2; }
-        #lighting-controls div { margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
-        #lighting-controls label { flex-basis: 45%; flex-shrink: 0; }
-        #lighting-controls input[type="range"] { flex-grow: 1; width: auto; height: 8px; cursor: pointer; accent-color: var(--accent-color); margin: 0 0.5rem; }
-        #lighting-controls span { display: inline-block; min-width: 2.5em; text-align: right; color: var(--text-color-heading); font-size: 1em; }
+        /* --- Lighting Controls Styling FIX --- */
+         #lighting-controls label { display: block; margin-bottom: 0.1rem; color: var(--text-color-muted); font-size: 1em; line-height: 1.2; }
+         #lighting-controls div { margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+         #lighting-controls label {
+             flex-basis: 35%; /* Reduced basis */
+             flex-shrink: 0;
+             margin-right: 0.5rem; /* Add margin after label */
+         }
+         #lighting-controls input[type="range"] {
+             flex-grow: 1; /* Allow slider to take space */
+             width: auto;
+             min-width: 0; /* Allow slider to shrink */
+             height: 8px; cursor: pointer; accent-color: var(--accent-color);
+             margin: 0; /* Remove horizontal margin */
+         }
+         #lighting-controls span {
+             display: inline-block;
+             min-width: 2.3em; /* Slightly reduced min-width */
+             text-align: right;
+             color: var(--text-color-heading);
+             font-size: 1em;
+             margin-left: 0.5rem; /* Add margin before value */
+         }
+        /* --- End Lighting Controls Styling FIX --- */
+
 
         #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; }
         #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.2rem; text-align: center; display: none; z-index: 10; pointer-events: none; font-family: var(--font-display); line-height: 1.4; }
@@ -110,8 +129,8 @@
         <h1>3D Tetris Builder</h1>
         <p>Construct the blueprints before the blocks pile up!</p>
         <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
-        <button id="start-game-button">Continue</button><br>
-        <p>Developed by SAFR+!</p>
+        <button id="start-game-button">Continue</button>
+        <br> <p>Developed by SAFR+!</p>
     </div>
 
     <div id="main-menu-screen" class="overlay">
@@ -222,12 +241,33 @@
         let groundTexture = null;
 
 
-        // --- Helper Function for Placeholder Skybox URLs ---
+        // --- Helper Function for Placeholder Skybox URLs --- (Keep generic one)
         function createPlaceholderSkybox(bC,tC,p=''){const s=256; return [`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PZ`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NZ`];}
 
-        // --- Theme Definitions (with UI colors) ---
-        // ... (themes remain the same)
-        const themes = { default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } }, milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } }, cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } }, jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } }, town: { background: new THREE.Color(0x87CEEB), skybox: createPlaceholderSkybox('87CEEB', 'FFFFFF', 'TOWN_'), starfield: false, fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.0, far: BOARD_DEPTH * 4.0 }, lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 }, groundColor: 0xbbbbbb, ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } } };
+        // --- Theme Definitions (with UI colors and updated Town skybox) ---
+        const themes = {
+            default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } },
+            milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } },
+            cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } },
+            jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } },
+            town: {
+                background: new THREE.Color(0x87CEEB), // Fallback sky blue
+                // Updated with actual GitHub raw URLs
+                skybox: [
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', // +X
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', // -X
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', // +Y
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', // -Y
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', // +Z
+                    'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png'  // -Z
+                ],
+                starfield: false,
+                fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, // Slightly adjusted fog
+                lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 },
+                groundColor: 0xbbbbbb,
+                ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' }
+             }
+        };
         let currentTheme = 'default';
 
         // --- Mission Definitions --- (Shortened)
@@ -277,24 +317,11 @@
             startGameButton.addEventListener('click', showMainMenu);
             playerNameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') showMainMenu(); });
             // Main Menu Buttons
-            menuStartButton.addEventListener('click', () => {
-                mainMenuScreen.style.display = 'none';
-                initializeAndStartGameplay(); // Start normal game
-            });
-             menuDemoButton.addEventListener('click', () => {
-                 mainMenuScreen.style.display = 'none';
-                 initializeAndStartGameplay(true); // Start demo mode
-             });
-             menuHelpButton.addEventListener('click', () => {
-                 // Show Help Screen
-                 mainMenuScreen.style.display = 'none';
-                 helpScreen.style.display = 'flex';
-             });
-             // Help Screen Close Button
-             closeHelpButton.addEventListener('click', () => {
-                 helpScreen.style.display = 'none';
-                 mainMenuScreen.style.display = 'flex'; // Go back to main menu
-             });
+            menuStartButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; initializeAndStartGameplay(); });
+            menuDemoButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; initializeAndStartGameplay(true); });
+            menuHelpButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; helpScreen.style.display = 'flex'; });
+            // Help Screen Close Button
+            closeHelpButton.addEventListener('click', () => { helpScreen.style.display = 'none'; mainMenuScreen.style.display = 'flex'; });
 
             animate(); // Start rendering loop
         }
