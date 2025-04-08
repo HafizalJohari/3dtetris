@@ -30,19 +30,54 @@
         #canvas { display: block; }
 
         /* --- Overlays --- */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-color-heading); text-align: center; padding: 1rem; font-family: var(--font-display); overflow-y: auto; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-color-heading); text-align: center; padding: 1rem; font-family: var(--font-display); overflow: hidden; /* Prevent scrollbars on overlay itself */ }
         #welcome-screen { /* Starts visible */ }
         #main-menu-screen { display: none; /* Hidden initially */ }
-        #help-screen { display: none; /* Hidden initially */ justify-content: flex-start; padding-top: 3rem; }
+        #help-screen { display: none; /* Hidden initially */ justify-content: flex-start; padding-top: 3rem; overflow-y: auto; /* Allow scroll only on help */ }
 
-        /* Welcome Screen Specifics */
-        #welcome-screen h1 { font-size: 1.8rem; line-height: 1.4; font-weight: normal; margin-bottom: 1rem; color: #fff; }
-        #welcome-screen p { font-size: 0.8rem; line-height: 1.5; color: var(--text-color-muted); margin-bottom: 2rem; }
-        #player-name { padding: 0.75rem 1rem; font-size: 0.8rem; border-radius: 0.5rem; border: 1px solid var(--panel-border); background-color: rgba(255, 255, 255, 0.1); color: var(--text-color-heading); margin-bottom: 1.5rem; width: 100%; max-width: 300px; text-align: center; font-family: var(--font-main); }
+        /* Welcome Screen Specifics (New Style) */
+        #welcome-screen h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: normal; /* Use font's default weight */
+            margin-bottom: 1rem; color: #fff;
+            /* Apply glow effect */
+            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff;
+        }
+        #welcome-screen p {
+             font-size: 0.8rem; /* Adjusted size */
+             line-height: 1.5; color: #60a5fa; /* text-blue-400 */
+             margin-bottom: 2.5rem; /* Increased margin */
+             /* Apply floating animation */
+             animation: float 4s ease-in-out infinite;
+        }
+        #player-name {
+            padding: 0.75rem 1rem; font-size: 0.8rem; /* Adjusted size */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid var(--accent-color); /* Use accent color for border */
+            background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 slightly transparent */
+            color: var(--text-color-heading); margin-bottom: 1.5rem;
+            width: 100%; max-width: 300px; text-align: center;
+            font-family: var(--font-main); /* Use standard font for input */
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); /* Subtle glow matching accent */
+        }
         #player-name::placeholder { color: var(--text-color-muted); }
-        #start-game-button { padding: 0.75rem 2rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); }
-         #start-game-button:hover { background-color: #2563eb; }
+        #start-game-button {
+            padding: 0.75rem 2rem; font-size: 0.9rem; /* Adjusted size */
+            font-weight: normal; border-radius: 0.5rem;
+            background-color: var(--accent-color); color: white; border: none;
+            cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+            font-family: var(--font-display);
+        }
+         #start-game-button:hover { background-color: #2563eb; /* blue-600 */ }
          #start-game-button:active { transform: scale(0.98); }
+         /* Background Texture Div */
+         #welcome-bg-texture {
+             position: absolute; width: 100%; height: 100%;
+             top: 0; left: 0; pointer-events: none;
+             opacity: 0.1; z-index: -1; /* Behind content */
+             background-image: url('https://www.transparenttextures.com/patterns/graphy.png');
+             background-repeat: repeat;
+         }
 
         /* Main Menu Specifics */
         #main-menu-screen h1 { font-size: 1.8rem; line-height: 1.4; font-weight: normal; margin-bottom: 2.5rem; color: #fff; }
@@ -115,14 +150,28 @@
         #btn-move-up { grid-area: up; } #btn-move-down { grid-area: down; } #btn-move-left { grid-area: left; } #btn-move-right { grid-area: right; }
         #action-buttons .mobile-button { width: 55px; height: 55px; border-radius: 0.75rem; }
 
+        /* Additional styles from user input */
+        .glow { text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff; }
+        .floating { animation: float 4s ease-in-out infinite; }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
     </style>
 </head>
 <body>
     <div id="welcome-screen" class="overlay">
-        <h1>3D Tetris Builder</h1>
-        <p>Construct the blueprints before the blocks pile up!</p>
-        <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
-        <button id="start-game-button">Continue</button>
+        <div id="welcome-bg-texture"></div>
+        <h1 class="glow">3D Tetris Builder</h1>
+        <p class="floating">Construct the blueprints before the blocks pile up!</p>
+        <div class="mb-4">
+            <input type="text" id="player-name" placeholder="Enter your architect name" maxlength="20"
+                   class="bg-gray-800 text-white px-4 py-2 rounded-md border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <button id="start-game-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-md transition">
+            Start Building!
+        </button>
     </div>
 
     <div id="main-menu-screen" class="overlay">
@@ -229,7 +278,7 @@
 
 
         // DOM Elements
-        // ... (add mobile control buttons)
+        // ... (add new help elements)
         let pauseButton, restartButton, messageBox, previewCanvas, scoreDisplay, themeButtons, aiHelpButton;
         let hemiIntensitySlider, ambientIntensitySlider, dirIntensitySlider, dirYSlider;
         let hemiIntensityValueSpan, ambientIntensityValueSpan, dirIntensityValueSpan, dirYValueSpan;
@@ -254,22 +303,8 @@
         function createPlaceholderSkybox(bC,tC,p=''){const s=256; return [`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NX`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NY`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}PZ`,`https://placehold.co/${s}x${s}/${bC}/${tC}?text=${p}NZ`];}
 
         // --- Theme Definitions (with UI colors and updated Town skybox) ---
-        const themes = {
-            default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, groundTextureUrl: `https://placehold.co/64x64/cccccc/999999.png?text=+`, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } },
-            milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, groundTextureUrl: `https://placehold.co/64x64/222222/555555.png?text=ROCK`, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } },
-            cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, groundTextureUrl: `https://placehold.co/64x64/440044/FF00FF.png?text=GRID`, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } },
-            jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, groundTextureUrl: `https://placehold.co/64x64/556B2F/b0d0a0.png?text=DIRT`, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } },
-            town: {
-                background: new THREE.Color(0x87CEEB), // Fallback sky blue
-                skybox: [ 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png' ],
-                starfield: false,
-                fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, // Slightly adjusted fog
-                lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 },
-                groundColor: 0xbbbbbb,
-                groundTextureUrl: `https://placehold.co/64x64/bbbbbb/888888.png?text=PAVE`, // Pavement placeholder
-                ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' }
-             }
-        };
+        // ... (themes remain the same)
+        const themes = { default: { background: new THREE.Color(0x333340), skybox: null, starfield: false, fog: { color: 0x333340, near: BOARD_DEPTH * 1.5, far: BOARD_DEPTH * 3 }, lights: { hemiSky: 0xadcafc, hemiGround: 0x404040, hemiIntensity: 1.5, ambient: 0xffffff, ambientIntensity: 0.3, dir: 0xffffff, dirIntensity: 2.0, dirY: 15 }, groundColor: 0xaaaaaa, groundTextureUrl: `https://placehold.co/64x64/cccccc/999999.png?text=+`, ui: { panelBg: 'rgba(50, 50, 64, 0.85)', panelBorder: 'rgba(100, 116, 139, 0.7)', textColor: '#e5e7eb', textColorMuted: '#9ca3af', textColorHeading: '#f3f4f6', accent: '#60a5fa' } }, milkyway: { background: new THREE.Color(0x000005), skybox: null, starfield: true, fog: null, lights: { hemiSky: 0x303050, hemiGround: 0x101020, hemiIntensity: 0.5, ambient: 0x404060, ambientIntensity: 0.15, dir: 0xaaaaff, dirIntensity: 0.8, dirY: 10 }, groundColor: 0x222222, groundTextureUrl: `https://placehold.co/64x64/222222/555555.png?text=ROCK`, ui: { panelBg: 'rgba(10, 10, 20, 0.85)', panelBorder: 'rgba(70, 70, 100, 0.7)', textColor: '#a0a0c0', textColorMuted: '#707090', textColorHeading: '#c0c0e0', accent: '#aaaaff' } }, cyberpunk: { background: new THREE.Color(0x1a0a2a), skybox: createPlaceholderSkybox('1a0a2a', 'FF00FF', 'CYBER_'), starfield: false, fog: { color: 0xff00ff, near: BOARD_DEPTH * 1.2, far: BOARD_DEPTH * 2.8 }, lights: { hemiSky: 0x00aaff, hemiGround: 0xff00aa, hemiIntensity: 1.8, ambient: 0x8888ff, ambientIntensity: 0.4, dir: 0x00ffff, dirIntensity: 1.8, dirY: 20 }, groundColor: 0x440044, groundTextureUrl: `https://placehold.co/64x64/440044/FF00FF.png?text=GRID`, ui: { panelBg: 'rgba(40, 10, 60, 0.9)', panelBorder: 'rgba(255, 0, 255, 0.5)', textColor: '#f0f', textColorMuted: '#a0a', textColorHeading: '#fff0ff', accent: '#0ff' } }, jungle: { background: new THREE.Color(0x305020), skybox: createPlaceholderSkybox('305020', 'b0d0a0', 'JUNGLE_'), starfield: false, fog: { color: 0x305020, near: BOARD_DEPTH * 0.7, far: BOARD_DEPTH * 2.2 }, lights: { hemiSky: 0xb0d0a0, hemiGround: 0x406030, hemiIntensity: 1.2, ambient: 0xeeeecc, ambientIntensity: 0.6, dir: 0xffffcc, dirIntensity: 1.5, dirY: 12 }, groundColor: 0x556B2F, groundTextureUrl: `https://placehold.co/64x64/556B2F/b0d0a0.png?text=DIRT`, ui: { panelBg: 'rgba(48, 80, 32, 0.9)', panelBorder: 'rgba(85, 107, 47, 0.7)', textColor: '#d0e0c0', textColorMuted: '#80a070', textColorHeading: '#f0fff0', accent: '#90ee90' } }, town: { background: new THREE.Color(0x87CEEB), skybox: [ 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_px.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nx.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_py.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_ny.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_pz.png', 'https://raw.githubusercontent.com/HafizalJohari/3dtetris/main/town_nz.png' ], starfield: false, fog: { color: 0xcccccc, near: BOARD_DEPTH * 2.5, far: BOARD_DEPTH * 5.0 }, lights: { hemiSky: 0xffffff, hemiGround: 0xaaaaaa, hemiIntensity: 1.8, ambient: 0xffffff, ambientIntensity: 0.6, dir: 0xffffee, dirIntensity: 2.2, dirY: 18 }, groundColor: 0xbbbbbb, groundTextureUrl: `https://placehold.co/64x64/bbbbbb/888888.png?text=PAVE`, ui: { panelBg: 'rgba(220, 220, 220, 0.85)', panelBorder: 'rgba(180, 180, 180, 0.7)', textColor: '#444', textColorMuted: '#777', textColorHeading: '#222', accent: '#4299e1' } } };
         let currentTheme = 'default';
 
         // --- Blueprint Generation Helpers --- MOVED BEFORE MISSIONS ARRAY ---
@@ -287,8 +322,22 @@
 
         // --- Combined Missions Array ---
         const missions = [ { name: "1: Foundation", blueprint: generateSolidBlueprint(4, 1, 4) }, { name: "2: Low Walls", blueprint: generateWallBlueprint(4, 1, 4) }, { name: "3: The Pillar", blueprint: generateSolidBlueprint(1, 5, 1) }, { name: "4: Enclosure", blueprint: generateHollowBlueprint(4, 2, 4) }, { name: "5: Archway", blueprint: generateArchBlueprint(5, 3, 1) }, { name: "6: Bridge", blueprint: bridgeBlueprint }, { name: "7: Overhang", blueprint: overhangBlueprint }, { name: "8: Cross", blueprint: crossBlueprint }, { name: "9: Wall Gap", blueprint: gapBlueprint } ];
-        // --- Tetromino Definitions --- (Shortened)
-        const TETROMINOES = {'I':{c:0x00FFFF,s:[[0,0,0],[-1,0,0],[1,0,0],[2,0,0]]},'O':{c:0xFFFF00,s:[[0,0,0],[1,0,0],[0,1,0],[1,1,0]]},'T':{c:0x800080,s:[[0,0,0],[-1,0,0],[1,0,0],[0,1,0]]},'L':{c:0xFFA500,s:[[0,0,0],[-1,0,0],[1,0,0],[1,1,0]]},'J':{c:0x0000FF,s:[[0,0,0],[-1,0,0],[1,0,0],[-1,1,0]]},'S':{c:0x00FF00,s:[[0,0,0],[-1,0,0],[0,1,0],[1,1,0]]},'Z':{c:0xFF0000,s:[[0,0,0],[1,0,0],[0,1,0],[-1,1,0]]}}; const TETROMINO_KEYS = Object.keys(TETROMINOES);
+
+        // --- Block Definitions (Renamed from TETROMINOES) ---
+        const BLOCK_DEFINITIONS = {
+            'I':    { color: 0x00FFFF, shape: [[0,0,0], [-1,0,0], [1,0,0], [2,0,0]] }, // Cyan
+            'O':    { color: 0xFFFF00, shape: [[0,0,0], [1,0,0], [0,1,0], [1,1,0]] }, // Yellow
+            'T':    { color: 0x800080, shape: [[0,0,0], [-1,0,0], [1,0,0], [0,1,0]] }, // Purple
+            'L':    { color: 0xFFA500, shape: [[0,0,0], [-1,0,0], [1,0,0], [1,1,0]] }, // Orange
+            'J':    { color: 0x0000FF, shape: [[0,0,0], [-1,0,0], [1,0,0], [-1,1,0]] }, // Blue
+            'S':    { color: 0x00FF00, shape: [[0,0,0], [-1,0,0], [0,1,0], [1,1,0]] }, // Green
+            'Z':    { color: 0xFF0000, shape: [[0,0,0], [1,0,0], [0,1,0], [-1,1,0]] }, // Red
+            'CUBE': { color: 0xaaaaaa, shape: [[0,0,0]] },                             // Gray
+            'BEAM2':{ color: 0xcc66cc, shape: [[0,0,0], [1,0,0]] },                     // Magenta
+            'BEAM3':{ color: 0x66ccff, shape: [[0,0,0], [1,0,0], [2,0,0]] },           // Light Blue
+            'CORNER':{color: 0xff9933, shape: [[0,0,0], [1,0,0], [0,1,0]] }            // Orange-Yellow
+        };
+        const BLOCK_KEYS = Object.keys(BLOCK_DEFINITIONS); // Renamed
 
 
         // --- Initialization ---
@@ -367,7 +416,7 @@
             gameStarted = true; isPaused = false; isGameOver = false;
             totalScore = 0; currentMissionIndex = 0;
             aiHintUsesLeft = AI_HINT_USES;
-            nextPieceData = determineNextPiece();
+            nextPieceData = determineNextPiece(); // Use new function name
             // console.log("DEBUG: Calling loadMission(0)"); // DEBUG
             loadMission(currentMissionIndex); // Load mission 0
 
@@ -400,65 +449,14 @@
         function initPreviewRenderer() { /* ... same as before ... */ previewScene=new THREE.Scene(); previewScene.background=null; const a=PREVIEW_CANVAS_SIZE/PREVIEW_CANVAS_SIZE; const fS=4*CUBE_SIZE; previewCamera=new THREE.OrthographicCamera(fS*a/-2,fS*a/2,fS/2,fS/-2,0.1,100); previewCamera.position.set(0,0,5); previewCamera.lookAt(0,0,0); previewRenderer=new THREE.WebGLRenderer({canvas:previewCanvas,antialias:true,alpha:true}); previewRenderer.setSize(PREVIEW_CANVAS_SIZE,PREVIEW_CANVAS_SIZE); previewRenderer.setPixelRatio(window.devicePixelRatio); previewRenderer.toneMapping=THREE.ACESFilmicToneMapping; previewRenderer.toneMappingExposure=1.0; const pA=new THREE.AmbientLight(0xffffff,1.0); previewScene.add(pA); const pL=new THREE.DirectionalLight(0xffffff,1.5); pL.position.set(1,2,3); previewScene.add(pL); }
         function loadTextures() { /* No longer loads ground texture here */ }
         function initBoard() { /* ... same as before ... */ board=Array(BOARD_WIDTH).fill(null).map(()=>Array(BOARD_HEIGHT).fill(null).map(()=>Array(BOARD_DEPTH).fill(0))); }
-        function createBoardVisuals() { /* ... same as before, but ground material map is initially null ... */ const gH=new THREE.GridHelper(Math.max(BOARD_WIDTH,BOARD_DEPTH),Math.max(BOARD_WIDTH,BOARD_DEPTH),0x888888,0x444444); gH.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2+0.01,BOARD_DEPTH/2-CUBE_SIZE/2); scene.add(gH); const gG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_DEPTH*CUBE_SIZE); const gM=new THREE.MeshStandardMaterial({color:0xaaaaaa,map:null,side:THREE.DoubleSide,roughness:0.8,metalness:0.2}); groundPlane=new THREE.Mesh(gG,gM); groundPlane.name="groundPlane"; groundPlane.rotation.x=-Math.PI/2; groundPlane.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); groundPlane.receiveShadow=true; scene.add(groundPlane); const wM=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.05,side:THREE.DoubleSide}); const bWG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const bW=new THREE.Mesh(bWG,wM); bW.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,-CUBE_SIZE/2); scene.add(bW); const lWG=new THREE.PlaneGeometry(BOARD_DEPTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const lW=new THREE.Mesh(lWG,wM); lW.position.set(-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); lW.rotation.y=Math.PI/2; scene.add(lW); const rW=lW.clone(); rW.position.x=BOARD_WIDTH-CUBE_SIZE/2; scene.add(rW); }
+        function createBoardVisuals() { /* ... same as before ... */ const gH=new THREE.GridHelper(Math.max(BOARD_WIDTH,BOARD_DEPTH),Math.max(BOARD_WIDTH,BOARD_DEPTH),0x888888,0x444444); gH.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2+0.01,BOARD_DEPTH/2-CUBE_SIZE/2); scene.add(gH); const gG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_DEPTH*CUBE_SIZE); const gM=new THREE.MeshStandardMaterial({color:0xaaaaaa,map:null,side:THREE.DoubleSide,roughness:0.8,metalness:0.2}); groundPlane=new THREE.Mesh(gG,gM); groundPlane.name="groundPlane"; groundPlane.rotation.x=-Math.PI/2; groundPlane.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); groundPlane.receiveShadow=true; scene.add(groundPlane); const wM=new THREE.MeshBasicMaterial({color:0xaaaaaa,transparent:true,opacity:0.05,side:THREE.DoubleSide}); const bWG=new THREE.PlaneGeometry(BOARD_WIDTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const bW=new THREE.Mesh(bWG,wM); bW.position.set(BOARD_WIDTH/2-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,-CUBE_SIZE/2); scene.add(bW); const lWG=new THREE.PlaneGeometry(BOARD_DEPTH*CUBE_SIZE,BOARD_HEIGHT*CUBE_SIZE); const lW=new THREE.Mesh(lWG,wM); lW.position.set(-CUBE_SIZE/2,BOARD_HEIGHT/2-CUBE_SIZE/2,BOARD_DEPTH/2-CUBE_SIZE/2); lW.rotation.y=Math.PI/2; scene.add(lW); const rW=lW.clone(); rW.position.x=BOARD_WIDTH-CUBE_SIZE/2; scene.add(rW); }
 
         // --- Starfield ---
         function createStarfield(){ if(starfield)removeStarfield(); const v=[]; for(let i=0;i<STARFIELD_COUNT;i++){ const th=Math.random()*Math.PI*2; const ph=Math.acos((Math.random()*2)-1); const r=STARFIELD_RADIUS*Math.cbrt(Math.random()); const x=r*Math.sin(ph)*Math.cos(th); const y=r*Math.sin(ph)*Math.sin(th); const z=r*Math.cos(ph); v.push(x,y,z); } const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); const m=new THREE.PointsMaterial({color:0xffffff,size:0.15,sizeAttenuation:true,transparent:true,opacity:0.8}); starfield=new THREE.Points(g,m); starfield.name="starfield"; scene.add(starfield); console.log("Starfield created."); }
         function removeStarfield(){ if(starfield){ scene.remove(starfield); starfield.geometry.dispose(); starfield.material.dispose(); starfield=null; console.log("Starfield removed."); } }
 
         // --- Theme Application ---
-        function applyTheme(themeName) {
-             const theme = themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;}
-             console.log(`Applying theme: ${themeName}`); currentTheme=themeName;
-             removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;}
-
-             // Apply Background/Starfield/Skybox
-             if (theme.starfield) { scene.background = theme.background; createStarfield(); }
-             else if (theme.skybox && theme.skybox.length === 6) { scene.background = theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}
-             else { scene.background = theme.background; }
-
-             // Update Fog
-             if (theme.fog) { if (!scene.fog) { scene.fog = new THREE.Fog(theme.fog.color, theme.fog.near, theme.fog.far); } else { scene.fog.color.set(theme.fog.color); scene.fog.near = theme.fog.near; scene.fog.far = theme.fog.far; } } else { scene.fog = null; }
-
-             // Update Lights & Controls
-             if (theme.lights) { hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);}
-
-             // --- Update Ground Texture ---
-             if (groundPlane && groundPlane.material) {
-                 if (theme.groundTextureUrl) {
-                     textureLoader.load(
-                         theme.groundTextureUrl,
-                         (texture) => { // onLoad
-                             texture.wrapS = THREE.RepeatWrapping;
-                             texture.wrapT = THREE.RepeatWrapping;
-                             texture.repeat.set(BOARD_WIDTH, BOARD_DEPTH);
-                             groundPlane.material.map = texture;
-                             groundPlane.material.color.set(0xffffff); // Use texture color primarily
-                             groundPlane.material.needsUpdate = true;
-                             console.log(`Ground texture loaded for ${themeName}`);
-                         },
-                         undefined, // onProgress
-                         (error) => { // onError
-                             console.error(`Error loading ground texture for ${themeName}:`, error);
-                             groundPlane.material.map = null; // Fallback to color
-                             groundPlane.material.color.setHex(theme.groundColor);
-                             groundPlane.material.needsUpdate = true;
-                         }
-                     );
-                 } else {
-                     // No texture URL, just set color
-                     groundPlane.material.map = null;
-                     groundPlane.material.color.setHex(theme.groundColor);
-                     groundPlane.material.needsUpdate = true;
-                 }
-             }
-             // ---
-
-             // Update UI Theme
-             const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');}
-             // Update active theme button
-             if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);});
-        }
+        function applyTheme(themeName) { /* ... same as before ... */ const theme=themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;} console.log(`Applying theme: ${themeName}`); currentTheme=themeName; removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;} if(theme.starfield){scene.background=theme.background; createStarfield();}else if(theme.skybox&&theme.skybox.length===6){scene.background=theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}else{scene.background=theme.background;} if(theme.fog){if(!scene.fog){scene.fog=new THREE.Fog(theme.fog.color,theme.fog.near,theme.fog.far);}else{scene.fog.color.set(theme.fog.color); scene.fog.near=theme.fog.near; scene.fog.far=theme.fog.far;}}else{scene.fog=null;} if(theme.lights){hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);} if (groundPlane && groundPlane.material) { if (theme.groundTextureUrl) { textureLoader.load( theme.groundTextureUrl, (texture) => { texture.wrapS = THREE.RepeatWrapping; texture.wrapT = THREE.RepeatWrapping; texture.repeat.set(BOARD_WIDTH, BOARD_DEPTH); groundPlane.material.map = texture; groundPlane.material.color.set(0xffffff); groundPlane.material.needsUpdate = true; console.log(`Ground texture loaded for ${themeName}`); }, undefined, (error) => { console.error(`Error loading ground texture for ${themeName}:`, error); groundPlane.material.map = null; groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate = true; } ); } else { groundPlane.material.map = null; groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate = true; } } const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');} if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);}); }
 
 
         // --- Mission Handling --- (Unchanged)
@@ -489,7 +487,7 @@
         function startGameLoop(){ if(isPaused||isGameOver||!gameStarted||isDemoMode)return; /* Don't run interval in demo */ if(fallInterval)clearInterval(fallInterval); fallInterval=setInterval(()=>{if(!isPaused&&!isGameOver&&currentPiece&&gameStarted&&!isDemoMode){movePiece(0,-1,0);}},currentFallSpeed); /* console.log("Timer start/reset:",currentFallSpeed); */ } // Quieten log
         function stopGameLoop(){ if(fallInterval){clearInterval(fallInterval); fallInterval=null;} if (demoTimeoutId) { clearTimeout(demoTimeoutId); demoTimeoutId = null;} } // Also stop demo timer
         function resetFallTimer(){ if(!isPaused&&!isGameOver&&gameStarted&&!isDemoMode){startGameLoop();} } // Don't run in demo
-        function determineNextPiece(){ const k=TETROMINO_KEYS[Math.floor(Math.random()*TETROMINO_KEYS.length)]; const d=TETROMINOES[k]; return {type:k, color:d.c, shape:JSON.parse(JSON.stringify(d.s))}; }
+        function determineNextPiece(){ const k=BLOCK_KEYS[Math.floor(Math.random()*BLOCK_KEYS.length)]; const d=BLOCK_DEFINITIONS[k]; return {type:k, color:d.color, shape:JSON.parse(JSON.stringify(d.shape))}; } // Use new names
         function spawnPiece(){ if(isGameOver||isPaused||!gameStarted)return; if(!nextPieceData){console.warn("nextPD null."); nextPieceData=determineNextPiece();} const cPD=nextPieceData; nextPieceData=determineNextPiece(); updatePreview(nextPieceData); const sX=Math.floor(BOARD_WIDTH/2); const sY=BOARD_HEIGHT - 2; /* Adjusted spawn height */ const sZ=Math.floor(BOARD_DEPTH/2); const pG=new THREE.Group(); const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=new THREE.MeshStandardMaterial({color:cPD.color,metalness:0.3,roughness:0.5}); cPD.shape.forEach(o=>{ const c=new THREE.Mesh(geo,mat.clone()); c.position.set(o[0]*CUBE_SIZE,o[1]*CUBE_SIZE,o[2]*CUBE_SIZE); c.castShadow=true; c.receiveShadow=false; pG.add(c); }); currentPiece={mesh:pG,shape:cPD.shape,x:sX,y:sY,z:sZ,rotationY:0, rotationX: 0, rotationZ: 0}; currentPiece.mesh.position.set(sX*CUBE_SIZE,sY*CUBE_SIZE,sZ*CUBE_SIZE); if(!isValidMove(currentPiece.x,currentPiece.y,currentPiece.z,currentPiece.shape)){console.log("Game Over on spawn!"); gameOver(); currentPiece=null; if(nextPieceData)updatePreview(nextPieceData); return;} scene.add(currentPiece.mesh); /* console.log("Spawned:",cPD.type,"Next:",nextPieceData.type); */ updateUI(); }
         function movePiece(dx,dy,dz, userInitiated = false){ if(!currentPiece||isPaused||isGameOver||!gameStarted)return; stopBlinkingHint(); const nX=currentPiece.x+dx; const nY=currentPiece.y+dy; const nZ=currentPiece.z+dz; if(isValidMove(nX,nY,nZ,currentPiece.shape)){ currentPiece.x=nX; currentPiece.y=nY; currentPiece.z=nZ; currentPiece.mesh.position.set(currentPiece.x*CUBE_SIZE,currentPiece.y*CUBE_SIZE,currentPiece.z*CUBE_SIZE); if (userInitiated && audioReady && synthMove) { synthMove.triggerAttackRelease("C5", "32n", Tone.now()); } } else if(dy<0){ lockPiece(); if(!isGameOver && !isDemoMode){ spawnPiece(); if(currentFallSpeed!==FALL_SPEED_NORMAL){ currentFallSpeed=FALL_SPEED_NORMAL; resetFallTimer(); } } else if (!isGameOver && isDemoMode) { runDemoStep(); /* Trigger next demo step after lock */ } } }
 
@@ -728,7 +726,7 @@
             // Spawn next piece and restart timer if applicable
             if (!isGameOver) {
                 spawnPiece();
-                if (currentPiece && !isGameOver) { // Check again after spawn
+                if (currentPiece && !isGameOver && !isDemoMode) { // Check again after spawn, only restart timer if not demo
                     resetFallTimer();
                 }
             }
