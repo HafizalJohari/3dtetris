@@ -30,54 +30,21 @@
         #canvas { display: block; }
 
         /* --- Overlays --- */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-color-heading); text-align: center; padding: 1rem; font-family: var(--font-display); overflow: hidden; /* Prevent scrollbars on overlay itself */ }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--text-color-heading); text-align: center; padding: 1rem; font-family: var(--font-display); overflow-y: auto; }
         #welcome-screen { /* Starts visible */ }
         #main-menu-screen { display: none; /* Hidden initially */ }
-        #help-screen { display: none; /* Hidden initially */ justify-content: flex-start; padding-top: 3rem; overflow-y: auto; /* Allow scroll only on help */ }
+        #help-screen { display: none; /* Hidden initially */ justify-content: flex-start; padding-top: 3rem; }
+        #scoreboard-screen { display: none; /* Hidden initially */ justify-content: flex-start; padding-top: 3rem; }
 
-        /* Welcome Screen Specifics (New Style) */
-        #welcome-screen h1 {
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: normal; /* Use font's default weight */
-            margin-bottom: 1rem; color: #fff;
-            /* Apply glow effect */
-            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff;
-        }
-        #welcome-screen p {
-             font-size: 0.8rem; /* Adjusted size */
-             line-height: 1.5; color: #60a5fa; /* text-blue-400 */
-             margin-bottom: 2.5rem; /* Increased margin */
-             /* Apply floating animation */
-             animation: float 4s ease-in-out infinite;
-        }
-        #player-name {
-            padding: 0.75rem 1rem; font-size: 0.8rem; /* Adjusted size */
-            border-radius: 0.5rem; /* rounded-lg */
-            border: 1px solid var(--accent-color); /* Use accent color for border */
-            background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 slightly transparent */
-            color: var(--text-color-heading); margin-bottom: 1.5rem;
-            width: 100%; max-width: 300px; text-align: center;
-            font-family: var(--font-main); /* Use standard font for input */
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); /* Subtle glow matching accent */
-        }
+
+        /* Welcome Screen Specifics */
+        #welcome-screen h1 { font-size: 1.8rem; line-height: 1.4; font-weight: normal; margin-bottom: 1rem; color: #fff; }
+        #welcome-screen p { font-size: 0.8rem; line-height: 1.5; color: var(--text-color-muted); margin-bottom: 2rem; }
+        #player-name { padding: 0.75rem 1rem; font-size: 0.8rem; border-radius: 0.5rem; border: 1px solid var(--panel-border); background-color: rgba(255, 255, 255, 0.1); color: var(--text-color-heading); margin-bottom: 1.5rem; width: 100%; max-width: 300px; text-align: center; font-family: var(--font-main); }
         #player-name::placeholder { color: var(--text-color-muted); }
-        #start-game-button {
-            padding: 0.75rem 2rem; font-size: 0.9rem; /* Adjusted size */
-            font-weight: normal; border-radius: 0.5rem;
-            background-color: var(--accent-color); color: white; border: none;
-            cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
-            font-family: var(--font-display);
-        }
-         #start-game-button:hover { background-color: #2563eb; /* blue-600 */ }
+        #start-game-button { padding: 0.75rem 2rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); }
+         #start-game-button:hover { background-color: #2563eb; }
          #start-game-button:active { transform: scale(0.98); }
-         /* Background Texture Div */
-         #welcome-bg-texture {
-             position: absolute; width: 100%; height: 100%;
-             top: 0; left: 0; pointer-events: none;
-             opacity: 0.1; z-index: -1; /* Behind content */
-             background-image: url('https://www.transparenttextures.com/patterns/graphy.png');
-             background-repeat: repeat;
-         }
 
         /* Main Menu Specifics */
         #main-menu-screen h1 { font-size: 1.8rem; line-height: 1.4; font-weight: normal; margin-bottom: 2.5rem; color: #fff; }
@@ -95,6 +62,17 @@
          #close-help-button { margin-top: 2rem; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); display: block; margin-left: auto; margin-right: auto; }
          #close-help-button:hover { background-color: #2563eb; }
          #close-help-button:active { transform: scale(0.98); }
+
+         /* Scoreboard Screen Specifics */
+         #scoreboard-content { max-width: 400px; text-align: left; font-size: 0.8rem; line-height: 1.8; color: var(--text-color); }
+         #scoreboard-screen h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; text-align: center; }
+         #score-list { list-style-type: decimal; padding-left: 2rem; margin-top: 1rem; }
+         #score-list li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+         #score-list span:last-child { color: #facc15; /* Yellow score */ margin-left: 1rem; }
+         #scoreboard-message { margin-top: 1rem; text-align: center; color: var(--text-color-muted); }
+         #close-scoreboard-button { margin-top: 2rem; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: normal; border-radius: 0.5rem; background-color: var(--accent-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease; font-family: var(--font-display); display: block; margin-left: auto; margin-right: auto; }
+         #close-scoreboard-button:hover { background-color: #2563eb; }
+         #close-scoreboard-button:active { transform: scale(0.98); }
 
 
         #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; color: var(--text-color); pointer-events: none; display: none; font-family: var(--font-display); font-size: 8px; }
@@ -150,35 +128,22 @@
         #btn-move-up { grid-area: up; } #btn-move-down { grid-area: down; } #btn-move-left { grid-area: left; } #btn-move-right { grid-area: right; }
         #action-buttons .mobile-button { width: 55px; height: 55px; border-radius: 0.75rem; }
 
-        /* Additional styles from user input */
-        .glow { text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 15px #00f0ff; }
-        .floating { animation: float 4s ease-in-out infinite; }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-
     </style>
 </head>
 <body>
     <div id="welcome-screen" class="overlay">
-        <div id="welcome-bg-texture"></div>
-        <h1 class="glow">3D Tetris Builder</h1>
-        <p class="floating">Construct the blueprints before the blocks pile up!</p>
-        <div class="mb-4">
-            <input type="text" id="player-name" placeholder="Enter architect name" maxlength="20"
-                   class="bg-gray-800 text-white px-4 py-2 rounded-md border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-        </div>
-        <button id="start-game-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-md transition">
-            Start Building!
-        </button>
+        <h1>3D Tetris Builder</h1>
+        <p>Construct the blueprints before the blocks pile up!</p>
+        <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+        <button id="start-game-button">Continue</button>
+        <br> <p>Developed by SAFR+</p>
     </div>
 
     <div id="main-menu-screen" class="overlay">
         <h1>MAIN MENU</h1>
         <button id="menu-start-button" class="menu-button">Start Game</button>
         <button id="menu-demo-button" class="menu-button">Demo</button>
-        <button id="menu-help-button" class="menu-button">Help</button>
+        <button id="menu-scoreboard-button" class="menu-button">Scoreboard</button> <button id="menu-help-button" class="menu-button">Help</button>
     </div>
 
     <div id="help-screen" class="overlay">
@@ -194,6 +159,15 @@
             <button id="close-help-button">Close</button>
         </div>
     </div>
+
+     <div id="scoreboard-screen" class="overlay">
+         <div id="scoreboard-content">
+             <h2>High Scores</h2>
+             <ol id="score-list"></ol>
+             <p id="scoreboard-message"></p>
+             <button id="close-scoreboard-button">Close</button>
+         </div>
+     </div>
 
     <div id="game-container">
         <canvas id="canvas"></canvas>
@@ -242,6 +216,8 @@
         // --- Constants ---
         // ... (constants remain the same)
         const BOARD_WIDTH = 10; const BOARD_HEIGHT = 20; const BOARD_DEPTH = 10; const CUBE_SIZE = 1; const FALL_SPEED_NORMAL = 1000; const FALL_SPEED_FAST = 50; const LOCK_FLASH_DURATION = 250; const PARTICLE_COUNT = 50; const PARTICLE_LIFESPAN = 0.5; const PREVIEW_CANVAS_SIZE = 80; const POINTS_PER_CUBE = 10; const POINTS_PER_CORRECT_CUBE_BONUS = 50; const POINTS_MISSION_COMPLETE = 500; const MAX_TIME_BONUS = 1000; const MAX_TIME_ALLOWED_PER_MISSION = 120; const STARFIELD_RADIUS = 200; const STARFIELD_COUNT = 5000; const AI_HINT_USES = 3; const AI_HINT_COST = 200; const AI_HINT_ACTIVATE_THRESHOLD = 3; const HINT_BLINK_DURATION = 5000; const HINT_BLINK_INTERVAL = 300; const DEMO_STEP_DELAY = 400; // ms between demo steps
+        const HIGH_SCORE_KEY = 'tetrisBuilderHighScores'; // localStorage Key
+        const MAX_HIGH_SCORES = 10; // Number of high scores to keep
 
 
         // --- Game State ---
@@ -278,13 +254,14 @@
 
 
         // DOM Elements
-        // ... (add new help elements)
+        // ... (add scoreboard elements)
         let pauseButton, restartButton, messageBox, previewCanvas, scoreDisplay, themeButtons, aiHelpButton;
         let hemiIntensitySlider, ambientIntensitySlider, dirIntensitySlider, dirYSlider;
         let hemiIntensityValueSpan, ambientIntensityValueSpan, dirIntensityValueSpan, dirYValueSpan;
         let welcomeScreen, playerNameInput, startGameButton, uiOverlay;
-        let mainMenuScreen, menuStartButton, menuDemoButton, menuHelpButton;
+        let mainMenuScreen, menuStartButton, menuDemoButton, menuHelpButton, menuScoreboardButton; // Added menuScoreboardButton
         let helpScreen, closeHelpButton;
+        let scoreboardScreen, scoreList, scoreboardMessage, closeScoreboardButton; // New Scoreboard Elements
         let btnMoveUp, btnMoveDown, btnMoveLeft, btnMoveRight, btnRotateY, btnHardDrop; // Mobile Buttons
 
 
@@ -322,21 +299,8 @@
 
         // --- Combined Missions Array ---
         const missions = [ { name: "1: Foundation", blueprint: generateSolidBlueprint(4, 1, 4) }, { name: "2: Low Walls", blueprint: generateWallBlueprint(4, 1, 4) }, { name: "3: The Pillar", blueprint: generateSolidBlueprint(1, 5, 1) }, { name: "4: Enclosure", blueprint: generateHollowBlueprint(4, 2, 4) }, { name: "5: Archway", blueprint: generateArchBlueprint(5, 3, 1) }, { name: "6: Bridge", blueprint: bridgeBlueprint }, { name: "7: Overhang", blueprint: overhangBlueprint }, { name: "8: Cross", blueprint: crossBlueprint }, { name: "9: Wall Gap", blueprint: gapBlueprint } ];
-
         // --- Block Definitions (Renamed from TETROMINOES) ---
-        const BLOCK_DEFINITIONS = {
-            'I':    { color: 0x00FFFF, shape: [[0,0,0], [-1,0,0], [1,0,0], [2,0,0]] }, // Cyan
-            'O':    { color: 0xFFFF00, shape: [[0,0,0], [1,0,0], [0,1,0], [1,1,0]] }, // Yellow
-            'T':    { color: 0x800080, shape: [[0,0,0], [-1,0,0], [1,0,0], [0,1,0]] }, // Purple
-            'L':    { color: 0xFFA500, shape: [[0,0,0], [-1,0,0], [1,0,0], [1,1,0]] }, // Orange
-            'J':    { color: 0x0000FF, shape: [[0,0,0], [-1,0,0], [1,0,0], [-1,1,0]] }, // Blue
-            'S':    { color: 0x00FF00, shape: [[0,0,0], [-1,0,0], [0,1,0], [1,1,0]] }, // Green
-            'Z':    { color: 0xFF0000, shape: [[0,0,0], [1,0,0], [0,1,0], [-1,1,0]] }, // Red
-            'CUBE': { color: 0xaaaaaa, shape: [[0,0,0]] },                             // Gray
-            'BEAM2':{ color: 0xcc66cc, shape: [[0,0,0], [1,0,0]] },                     // Magenta
-            'BEAM3':{ color: 0x66ccff, shape: [[0,0,0], [1,0,0], [2,0,0]] },           // Light Blue
-            'CORNER':{color: 0xff9933, shape: [[0,0,0], [1,0,0], [0,1,0]] }            // Orange-Yellow
-        };
+        const BLOCK_DEFINITIONS = { 'I': { color: 0x00FFFF, shape: [[0,0,0], [-1,0,0], [1,0,0], [2,0,0]] }, 'O': { color: 0xFFFF00, shape: [[0,0,0], [1,0,0], [0,1,0], [1,1,0]] }, 'T': { color: 0x800080, shape: [[0,0,0], [-1,0,0], [1,0,0], [0,1,0]] }, 'L': { color: 0xFFA500, shape: [[0,0,0], [-1,0,0], [1,0,0], [1,1,0]] }, 'J': { color: 0x0000FF, shape: [[0,0,0], [-1,0,0], [1,0,0], [-1,1,0]] }, 'S': { color: 0x00FF00, shape: [[0,0,0], [-1,0,0], [0,1,0], [1,1,0]] }, 'Z': { color: 0xFF0000, shape: [[0,0,0], [1,0,0], [0,1,0], [-1,1,0]] }, 'CUBE': { color: 0xaaaaaa, shape: [[0,0,0]] }, 'BEAM2':{ color: 0xcc66cc, shape: [[0,0,0], [1,0,0]] }, 'BEAM3':{ color: 0x66ccff, shape: [[0,0,0], [1,0,0], [2,0,0]] }, 'CORNER':{color: 0xff9933, shape: [[0,0,0], [1,0,0], [0,1,0]] } };
         const BLOCK_KEYS = Object.keys(BLOCK_DEFINITIONS); // Renamed
 
 
@@ -347,9 +311,11 @@
             // Get UI Elements
             uiOverlay = document.getElementById('ui-overlay'); pauseButton = document.getElementById('pause-button'); restartButton = document.getElementById('restart-button'); messageBox = document.getElementById('message-box'); previewCanvas = document.getElementById('preview-canvas'); scoreDisplay = document.getElementById('score-display'); themeButtons = document.querySelectorAll('.theme-button'); aiHelpButton = document.getElementById('ai-help-button'); welcomeScreen = document.getElementById('welcome-screen'); playerNameInput = document.getElementById('player-name'); startGameButton = document.getElementById('start-game-button');
             // Menu Elements
-            mainMenuScreen = document.getElementById('main-menu-screen'); menuStartButton = document.getElementById('menu-start-button'); menuDemoButton = document.getElementById('menu-demo-button'); menuHelpButton = document.getElementById('menu-help-button');
+            mainMenuScreen = document.getElementById('main-menu-screen'); menuStartButton = document.getElementById('menu-start-button'); menuDemoButton = document.getElementById('menu-demo-button'); menuHelpButton = document.getElementById('menu-help-button'); menuScoreboardButton = document.getElementById('menu-scoreboard-button'); // Get Scoreboard button
             // Help Screen Elements
             helpScreen = document.getElementById('help-screen'); closeHelpButton = document.getElementById('close-help-button');
+            // Scoreboard Screen Elements
+            scoreboardScreen = document.getElementById('scoreboard-screen'); scoreList = document.getElementById('score-list'); scoreboardMessage = document.getElementById('scoreboard-message'); closeScoreboardButton = document.getElementById('close-scoreboard-button');
             // Lighting Control Elements
             hemiIntensitySlider = document.getElementById('hemi-intensity'); ambientIntensitySlider = document.getElementById('ambient-intensity'); dirIntensitySlider = document.getElementById('dir-intensity'); dirYSlider = document.getElementById('dir-y'); hemiIntensityValueSpan = document.getElementById('hemi-intensity-value'); ambientIntensityValueSpan = document.getElementById('ambient-intensity-value'); dirIntensityValueSpan = document.getElementById('dir-intensity-value'); dirYValueSpan = document.getElementById('dir-y-value');
             // Mobile Control Buttons
@@ -387,8 +353,14 @@
             menuStartButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; initializeAndStartGameplay(); });
             menuDemoButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; initializeAndStartGameplay(true); });
             menuHelpButton.addEventListener('click', () => { mainMenuScreen.style.display = 'none'; helpScreen.style.display = 'flex'; });
+            menuScoreboardButton.addEventListener('click', showScoreboard); // Listener for Scoreboard button
             // Help Screen Close Button
             closeHelpButton.addEventListener('click', () => { helpScreen.style.display = 'none'; mainMenuScreen.style.display = 'flex'; });
+             // Scoreboard Screen Close Button
+             closeScoreboardButton.addEventListener('click', () => {
+                 scoreboardScreen.style.display = 'none';
+                 mainMenuScreen.style.display = 'flex'; // Go back to main menu
+             });
             // Mobile Control Button Listeners
             btnMoveUp.addEventListener('click', () => movePiece(0,0,-1, true)); // W
             btnMoveDown.addEventListener('click', () => movePiece(0,0,1, true));  // S
@@ -402,6 +374,7 @@
 
         // --- Remaining Functions (initializeAndStartGameplay, showMainMenu, setupAudio, etc.) ---
         // ... (No changes needed in the rest of the JavaScript logic from previous version) ...
+
         // Renamed from startGame
         async function initializeAndStartGameplay(demo = false) { // Added demo flag
              // --- Start Audio Context ---
@@ -521,7 +494,7 @@
         function isValidMove(bX,bY,bZ,sh){ /* Allow check even if game not started for AI/Demo */ for(const o of sh){ const wX=bX+o[0]; const wY=bY+o[1]; const wZ=bZ+o[2]; if(wX<0||wX>=BOARD_WIDTH||wY<0||wZ<0||wZ>=BOARD_DEPTH)return false; if(wY>=BOARD_HEIGHT)continue; if(board[wX][wY][wZ]!==0)return false; } return true; }
         function lockPiece(){ if(!currentPiece||isGameOver||!gameStarted)return; stopBlinkingHint(); /* console.log("Locking:",currentPiece.x,currentPiece.y,currentPiece.z); */ let mPM=false; const pM=currentPiece.mesh.children[0].material; let sGTL=0; currentPiece.shape.forEach(o=>{ const wX=currentPiece.x+o[0]; const wY=currentPiece.y+o[1]; const wZ=currentPiece.z+o[2]; if(wX>=0&&wX<BOARD_WIDTH&&wY>=0&&wY<BOARD_HEIGHT&&wZ>=0&&wZ<BOARD_DEPTH){ const geo=new THREE.BoxGeometry(CUBE_SIZE,CUBE_SIZE,CUBE_SIZE); const mat=pM.clone(); const lC=new THREE.Mesh(geo,mat); lC.position.set(wX*CUBE_SIZE,wY*CUBE_SIZE,wZ*CUBE_SIZE); lC.castShadow=true; lC.receiveShadow=true; lockedBlocksGroup.add(lC); board[wX][wY][wZ]=1; if (!isDemoMode) totalScore+=POINTS_PER_CUBE; sGTL+=POINTS_PER_CUBE; const fGI=ghostBlocks.findIndex(g=>g.visible&&g.userData.originalPosition.x===wX&&g.userData.originalPosition.y===wY&&g.userData.originalPosition.z===wZ); if(fGI!==-1){ ghostBlocks[fGI].visible=false; placedTargetBlocks++; mPM=true; /* console.log("BP filled!"); */ if (!isDemoMode) totalScore+=POINTS_PER_CORRECT_CUBE_BONUS; sGTL+=POINTS_PER_CORRECT_CUBE_BONUS; const pP=lC.position.clone(); createParticleEffect(pP,mat.color); const oE=mat.emissive.getHex(); mat.emissive.setHex(0xffffff); mat.needsUpdate=true; setTimeout(()=>{if(lC.parent){mat.emissive.setHex(oE); mat.needsUpdate=true;}},LOCK_FLASH_DURATION); } }else{ console.warn("Lock out:",wX,wY,wZ); if(wY>=BOARD_HEIGHT){console.log("Lock above - GO."); if(currentPiece&&currentPiece.mesh.parent)scene.remove(currentPiece.mesh); currentPiece=null; gameOver(); return;} } }); if(currentPiece&&currentPiece.mesh.parent){scene.remove(currentPiece.mesh);} currentPiece=null; /* console.log(`Score gain lock: ${sGTL}`); */ if (audioReady && !isDemoMode) { if (mPM && synthCorrectLock) { synthCorrectLock.triggerAttackRelease("G5", "16n", Tone.now()); } if (synthLock) { synthLock.triggerAttackRelease("C2", "8n", Tone.now() + 0.01); } } updateUI(); if(!isGameOver&&mPM){checkMissionCompletion();} }
         function clearBoard(){ initBoard(); while(lockedBlocksGroup.children.length>0){ const o=lockedBlocksGroup.children[0]; if(o.geometry)o.geometry.dispose(); if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose()); else o.material.dispose();} lockedBlocksGroup.remove(o); } activeParticles.forEach(p=>scene.remove(p.mesh)); activeParticles=[]; removeStarfield(); }
-        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); stopBlinkingHint(); if(backgroundMusicPlayer) backgroundMusicPlayer.stop(); if(!isC)showMessage(`Game Over! Final Score: ${totalScore}`); updateUI(); }
+        function gameOver(isC=false){ console.log("GO. All complete:",isC); isGameOver=true; stopGameLoop(); stopBlinkingHint(); if(backgroundMusicPlayer) backgroundMusicPlayer.stop(); if(!isC)saveHighScore(playerName, totalScore); /* Save score on Game Over */ showMessage(`Game Over! Final Score: ${totalScore}`); updateUI(); }
 
         // --- UI Functions ---
         function updateUI(){ if(!gameStarted && !isGameOver && !isDemoMode) return; // Don't update UI before start, but update on Game Over or during Demo
@@ -568,6 +541,7 @@
             mainMenuScreen.style.display = 'flex'; // Show main menu
             welcomeScreen.style.display = 'none';
             helpScreen.style.display = 'none'; // Ensure help screen is hidden too
+            scoreboardScreen.style.display = 'none'; // Ensure scoreboard is hidden
             controls.enabled = true; // Ensure camera controls re-enabled
         }
 
@@ -662,6 +636,85 @@
                      console.log("Demo: Ending after skip because no piece spawned or game over.");
                      goToMainMenu();
                  }
+            }
+        }
+
+
+        // --- High Score Logic ---
+        function saveHighScore(name, score) {
+            if (!name || score <= 0) return; // Don't save empty names or zero scores
+
+            const newScore = { name: name, score: score, date: new Date().toISOString() };
+            let highScores = loadHighScores(); // Get current scores
+
+            highScores.push(newScore); // Add new score
+            highScores.sort((a, b) => b.score - a.score); // Sort descending
+            highScores = highScores.slice(0, MAX_HIGH_SCORES); // Keep only top N
+
+            try {
+                localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(highScores));
+                console.log("High scores saved:", highScores);
+            } catch (e) {
+                console.error("Error saving high scores to localStorage:", e);
+            }
+        }
+
+        function loadHighScores() {
+            try {
+                const scoresJson = localStorage.getItem(HIGH_SCORE_KEY);
+                if (!scoresJson) {
+                    return []; // No scores saved yet
+                }
+                const scores = JSON.parse(scoresJson);
+                // Basic validation
+                if (!Array.isArray(scores)) return [];
+                // Ensure scores are sorted (might have been saved unsorted previously)
+                scores.sort((a, b) => b.score - a.score);
+                return scores.slice(0, MAX_HIGH_SCORES); // Return top N
+            } catch (e) {
+                console.error("Error loading high scores from localStorage:", e);
+                return []; // Return empty array on error
+            }
+        }
+
+        function displayHighScores(scores) {
+            if (!scoreList || !scoreboardMessage) return;
+            scoreList.innerHTML = ''; // Clear previous scores
+
+            if (scores.length === 0) {
+                scoreboardMessage.textContent = 'No scores yet!';
+                return;
+            }
+
+            scores.forEach((scoreEntry, index) => {
+                const li = document.createElement('li');
+                const rankSpan = document.createElement('span');
+                const nameSpan = document.createElement('span');
+                const scoreSpan = document.createElement('span');
+
+                rankSpan.textContent = `${index + 1}. `;
+                nameSpan.textContent = scoreEntry.name; // Already safe as it came from input/state
+                scoreSpan.textContent = scoreEntry.score;
+
+                li.appendChild(rankSpan);
+                li.appendChild(nameSpan);
+                li.appendChild(scoreSpan);
+                scoreList.appendChild(li);
+            });
+             scoreboardMessage.textContent = ''; // Clear loading/error message
+        }
+
+        function showScoreboard() {
+            mainMenuScreen.style.display = 'none'; // Hide main menu
+            scoreboardScreen.style.display = 'flex'; // Show scoreboard overlay
+            scoreList.innerHTML = ''; // Clear previous scores
+            scoreboardMessage.textContent = 'Loading...'; // Show loading message
+
+            // Load and display scores from localStorage
+            const highScores = loadHighScores();
+            displayHighScores(highScores);
+            if (highScores.length > 0) {
+                 scoreboardMessage.textContent = ''; // Clear loading message if scores found
             }
         }
 
