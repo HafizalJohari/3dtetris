@@ -52,6 +52,16 @@
         .menu-button:hover { background-color: var(--button-hover-bg); transform: translateY(-1px); }
         .menu-button:active { background-color: var(--button-active-bg); transform: scale(0.98); }
 
+        /* Difficulty Selector */
+        .difficulty-selector { margin-bottom: 2rem; }
+        .difficulty-selector h3 { font-size: 1.2rem; color: var(--text-color-heading); margin-bottom: 1rem; text-align: center; font-family: var(--font-display); font-weight: normal; }
+        .difficulty-buttons { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+        .difficulty-button { width: auto !important; margin: 0 !important; }
+        .difficulty-button.active { background-color: var(--accent-color); border-color: var(--accent-color); }
+
+        /* Landing Preview */
+        .landing-preview { opacity: 0.3; pointer-events: none; }
+
         /* Help Screen Specifics */
          #help-screen-content { max-width: 600px; text-align: left; font-size: 0.75rem; line-height: 1.6; color: var(--text-color); }
          #help-screen h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; text-align: center; }
@@ -116,6 +126,18 @@
         #preview-canvas { width: 80px; height: 80px; border-radius: 0.375rem; background-color: rgba(0, 0, 0, 0.2); margin: 0 auto; }
         #message-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 1.5rem 2.5rem; border-radius: 0.75rem; font-size: 1.2rem; text-align: center; display: none; z-index: 10; pointer-events: none; font-family: var(--font-display); line-height: 1.4; }
 
+        /* Compass Styles */
+        #compass-container { position: absolute; bottom: 1rem; right: 1rem; width: 80px; height: 80px; pointer-events: none; z-index: 5; }
+        #compass { position: relative; width: 100%; height: 100%; }
+        #compass-ring { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 2px solid var(--panel-border); border-radius: 50%; background-color: var(--panel-bg); }
+        #compass-pointer { position: absolute; top: 50%; left: 50%; width: 2px; height: 40%; background: linear-gradient(to bottom, var(--accent-color) 0%, transparent 100%); transform-origin: bottom center; }
+        #compass-labels { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .compass-label { position: absolute; font-family: var(--font-display); font-size: 0.6rem; color: var(--text-color); text-align: center; width: 20px; height: 20px; line-height: 20px; margin: -10px; }
+        .compass-label.north { top: 15%; left: 50%; }
+        .compass-label.south { bottom: 15%; left: 50%; margin-bottom: -10px; }
+        .compass-label.east { right: 15%; top: 50%; }
+        .compass-label.west { left: 15%; top: 50%; }
+
         /* --- Mobile Controls --- */
         #mobile-controls { position: fixed; bottom: 0; left: 0; width: 100%; padding: 1rem; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; z-index: 50; }
         @media (min-width: 768px) { #mobile-controls { display: none; } }
@@ -136,14 +158,22 @@
         <p>Construct the blueprints before the blocks pile up!</p>
         <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
         <button id="start-game-button">Continue</button>
-        <br> <p>Developed by SAFR+</p>
     </div>
 
     <div id="main-menu-screen" class="overlay">
         <h1>MAIN MENU</h1>
+        <div class="difficulty-selector">
+            <h3>Difficulty</h3>
+            <div class="difficulty-buttons">
+                <button class="menu-button difficulty-button active" data-difficulty="easy">Easy</button>
+                <button class="menu-button difficulty-button" data-difficulty="normal">Normal</button>
+                <button class="menu-button difficulty-button" data-difficulty="hard">Hard</button>
+            </div>
+        </div>
         <button id="menu-start-button" class="menu-button">Start Game</button>
         <button id="menu-demo-button" class="menu-button">Demo</button>
-        <button id="menu-scoreboard-button" class="menu-button">Scoreboard</button> <button id="menu-help-button" class="menu-button">Help</button>
+        <button id="menu-scoreboard-button" class="menu-button">Scoreboard</button>
+        <button id="menu-help-button" class="menu-button">Help</button>
     </div>
 
     <div id="help-screen" class="overlay">
@@ -190,6 +220,19 @@
         </div>
         <div id="message-box">Message</div>
 
+        <div id="compass-container">
+            <div id="compass">
+                <div id="compass-ring"></div>
+                <div id="compass-pointer"></div>
+                <div id="compass-labels">
+                    <div class="compass-label north">N</div>
+                    <div class="compass-label south">S</div>
+                    <div class="compass-label east">E</div>
+                    <div class="compass-label west">W</div>
+                </div>
+            </div>
+        </div>
+
         <div id="mobile-controls" class="md:hidden">
             <div id="d-pad">
                  <button id="btn-move-up" class="mobile-button"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/arrow-up.svg" alt="Up"/> </button>
@@ -234,6 +277,13 @@
         let isBlinkingHint = false; let blinkingGhostsInfo = []; let blinkIntervalId = null;
         let isDemoMode = false; // Flag for demo mode
         let demoTimeoutId = null; // Timeout ID for demo steps
+        let currentDifficulty = 'easy'; // Difficulty setting
+        let landingPreview = null; // Landing preview mesh
+
+        // Compass Elements
+        let compassPointer = null;
+        let lastCompassUpdate = 0;
+        const COMPASS_UPDATE_INTERVAL = 1000 / 30; // 30fps update rate
 
 
         // --- Scene Elements ---
@@ -370,6 +420,20 @@
             btnHardDrop.addEventListener('click', hardDrop);                     // Tab
 
             animate(); // Start rendering loop
+
+            // Add difficulty button listeners
+            document.querySelectorAll('.difficulty-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.difficulty-button').forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    currentDifficulty = button.dataset.difficulty;
+                    if (currentDifficulty !== 'easy') {
+                        removeLandingPreview();
+                    } else if (currentPiece) {
+                        createLandingPreview();
+                    }
+                });
+            });
         }
 
         // --- Remaining Functions (initializeAndStartGameplay, showMainMenu, setupAudio, etc.) ---
@@ -429,7 +493,122 @@
         function removeStarfield(){ if(starfield){ scene.remove(starfield); starfield.geometry.dispose(); starfield.material.dispose(); starfield=null; console.log("Starfield removed."); } }
 
         // --- Theme Application ---
-        function applyTheme(themeName) { /* ... same as before ... */ const theme=themes[themeName]; if(!theme){console.warn(`Theme "${themeName}" not found.`); return;} console.log(`Applying theme: ${themeName}`); currentTheme=themeName; removeStarfield(); if(scene.background&&scene.background.isTexture){scene.background=null;} if(theme.starfield){scene.background=theme.background; createStarfield();}else if(theme.skybox&&theme.skybox.length===6){scene.background=theme.background; cubeTextureLoader.load(theme.skybox,(t)=>{scene.background=t; console.log(`${themeName} skybox loaded.`);},undefined,(e)=>{console.error(`Skybox error ${themeName}:`,e); scene.background=theme.background;});}else{scene.background=theme.background;} if(theme.fog){if(!scene.fog){scene.fog=new THREE.Fog(theme.fog.color,theme.fog.near,theme.fog.far);}else{scene.fog.color.set(theme.fog.color); scene.fog.near=theme.fog.near; scene.fog.far=theme.fog.far;}}else{scene.fog=null;} if(theme.lights){hemisphereLight.color.setHex(theme.lights.hemiSky); hemisphereLight.groundColor.setHex(theme.lights.hemiGround); hemisphereLight.intensity=theme.lights.hemiIntensity; ambientLight.color.setHex(theme.lights.ambient); ambientLight.intensity=theme.lights.ambientIntensity; directionalLight.color.setHex(theme.lights.dir); directionalLight.intensity=theme.lights.dirIntensity; directionalLight.position.y=theme.lights.dirY; if(hemiIntensitySlider)hemiIntensitySlider.value=theme.lights.hemiIntensity; if(hemiIntensityValueSpan)hemiIntensityValueSpan.textContent=theme.lights.hemiIntensity.toFixed(1); if(ambientIntensitySlider)ambientIntensitySlider.value=theme.lights.ambientIntensity; if(ambientIntensityValueSpan)ambientIntensityValueSpan.textContent=theme.lights.ambientIntensity.toFixed(1); if(dirIntensitySlider)dirIntensitySlider.value=theme.lights.dirIntensity; if(dirIntensityValueSpan)dirIntensityValueSpan.textContent=theme.lights.dirIntensity.toFixed(1); if(dirYSlider)dirYSlider.value=theme.lights.dirY; if(dirYValueSpan)dirYValueSpan.textContent=theme.lights.dirY.toFixed(0);} if (groundPlane && groundPlane.material) { if (theme.groundTextureUrl) { textureLoader.load( theme.groundTextureUrl, (texture) => { texture.wrapS = THREE.RepeatWrapping; texture.wrapT = THREE.RepeatWrapping; texture.repeat.set(BOARD_WIDTH, BOARD_DEPTH); groundPlane.material.map = texture; groundPlane.material.color.set(0xffffff); groundPlane.material.needsUpdate = true; console.log(`Ground texture loaded for ${themeName}`); }, undefined, (error) => { console.error(`Error loading ground texture for ${themeName}:`, error); groundPlane.material.map = null; groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate = true; } ); } else { groundPlane.material.map = null; groundPlane.material.color.setHex(theme.groundColor); groundPlane.material.needsUpdate = true; } } const rootStyle=document.documentElement.style; if(theme.ui){rootStyle.setProperty('--panel-bg',theme.ui.panelBg); rootStyle.setProperty('--panel-border',theme.ui.panelBorder); rootStyle.setProperty('--text-color',theme.ui.textColor); rootStyle.setProperty('--text-color-muted',theme.ui.textColorMuted); rootStyle.setProperty('--text-color-heading',theme.ui.textColorHeading); rootStyle.setProperty('--accent-color',theme.ui.accent); rootStyle.setProperty('--button-bg',theme.ui.buttonBg||'#4b5563'); rootStyle.setProperty('--button-border',theme.ui.buttonBorder||'#6b7280'); rootStyle.setProperty('--button-hover-bg',theme.ui.buttonHoverBg||'#374151');} if(themeButtons)themeButtons.forEach(button=>{button.classList.toggle('active',button.dataset.theme===themeName);}); }
+        function applyTheme(themeName) { 
+            const theme = themes[themeName]; 
+            if(!theme) {
+                console.warn(`Theme "${themeName}" not found.`); 
+                return;
+            } 
+            console.log(`Applying theme: ${themeName}`); 
+            currentTheme = themeName; 
+            
+            removeStarfield(); 
+            
+            if(scene.background && scene.background.isTexture) {
+                scene.background = null;
+            } 
+            
+            if(theme.starfield) {
+                scene.background = theme.background; 
+                createStarfield();
+            } else if(theme.skybox && theme.skybox.length === 6) {
+                scene.background = theme.background; 
+                cubeTextureLoader.load(theme.skybox, (t) => {
+                    scene.background = t; 
+                    console.log(`${themeName} skybox loaded.`);
+                }, undefined, (e) => {
+                    console.error(`Skybox error ${themeName}:`, e); 
+                    scene.background = theme.background;
+                });
+            } else {
+                scene.background = theme.background;
+            } 
+            
+            if(theme.fog) {
+                if(!scene.fog) {
+                    scene.fog = new THREE.Fog(theme.fog.color, theme.fog.near, theme.fog.far);
+                } else {
+                    scene.fog.color.set(theme.fog.color); 
+                    scene.fog.near = theme.fog.near; 
+                    scene.fog.far = theme.fog.far;
+                }
+            } else {
+                scene.fog = null;
+            } 
+            
+            if(theme.lights) {
+                hemisphereLight.color.setHex(theme.lights.hemiSky); 
+                hemisphereLight.groundColor.setHex(theme.lights.hemiGround); 
+                hemisphereLight.intensity = theme.lights.hemiIntensity; 
+                ambientLight.color.setHex(theme.lights.ambient); 
+                ambientLight.intensity = theme.lights.ambientIntensity; 
+                directionalLight.color.setHex(theme.lights.dir); 
+                directionalLight.intensity = theme.lights.dirIntensity; 
+                directionalLight.position.y = theme.lights.dirY; 
+                
+                if(hemiIntensitySlider) hemiIntensitySlider.value = theme.lights.hemiIntensity; 
+                if(hemiIntensityValueSpan) hemiIntensityValueSpan.textContent = theme.lights.hemiIntensity.toFixed(1); 
+                if(ambientIntensitySlider) ambientIntensitySlider.value = theme.lights.ambientIntensity; 
+                if(ambientIntensityValueSpan) ambientIntensityValueSpan.textContent = theme.lights.ambientIntensity.toFixed(1); 
+                if(dirIntensitySlider) dirIntensitySlider.value = theme.lights.dirIntensity; 
+                if(dirIntensityValueSpan) dirIntensityValueSpan.textContent = theme.lights.dirIntensity.toFixed(1); 
+                if(dirYSlider) dirYSlider.value = theme.lights.dirY; 
+                if(dirYValueSpan) dirYValueSpan.textContent = theme.lights.dirY.toFixed(0);
+            } 
+            
+            if (groundPlane && groundPlane.material) { 
+                if (theme.groundTextureUrl) { 
+                    textureLoader.load(theme.groundTextureUrl, (texture) => { 
+                        texture.wrapS = THREE.RepeatWrapping; 
+                        texture.wrapT = THREE.RepeatWrapping; 
+                        texture.repeat.set(BOARD_WIDTH, BOARD_DEPTH); 
+                        groundPlane.material.map = texture; 
+                        groundPlane.material.color.set(0xffffff); 
+                        groundPlane.material.needsUpdate = true; 
+                        console.log(`Ground texture loaded for ${themeName}`); 
+                    }, undefined, (error) => { 
+                        console.error(`Error loading ground texture for ${themeName}:`, error); 
+                        groundPlane.material.map = null; 
+                        groundPlane.material.color.setHex(theme.groundColor); 
+                        groundPlane.material.needsUpdate = true; 
+                    } ); 
+                } else { 
+                    groundPlane.material.map = null; 
+                    groundPlane.material.color.setHex(theme.groundColor); 
+                    groundPlane.material.needsUpdate = true; 
+                } 
+            } 
+            
+            const rootStyle = document.documentElement.style; 
+            if(theme.ui) {
+                rootStyle.setProperty('--panel-bg', theme.ui.panelBg); 
+                rootStyle.setProperty('--panel-border', theme.ui.panelBorder); 
+                rootStyle.setProperty('--text-color', theme.ui.textColor); 
+                rootStyle.setProperty('--text-color-muted', theme.ui.textColorMuted); 
+                rootStyle.setProperty('--text-color-heading', theme.ui.textColorHeading); 
+                rootStyle.setProperty('--accent-color', theme.ui.accent); 
+                rootStyle.setProperty('--button-bg', theme.ui.buttonBg || '#4b5563'); 
+                rootStyle.setProperty('--button-border', theme.ui.buttonBorder || '#6b7280'); 
+                rootStyle.setProperty('--button-hover-bg', theme.ui.buttonHoverBg || '#374151');
+                
+                // Update compass colors
+                const compass = document.getElementById('compass-ring');
+                const compassPointer = document.getElementById('compass-pointer');
+                if (compass) {
+                    compass.style.borderColor = theme.ui.panelBorder;
+                    compass.style.backgroundColor = theme.ui.panelBg;
+                }
+                if (compassPointer) {
+                    compassPointer.style.background = `linear-gradient(to bottom, ${theme.ui.accent} 0%, transparent 100%)`;
+                }
+            } 
+            
+            if(themeButtons) {
+                themeButtons.forEach(button => {
+                    button.classList.toggle('active', button.dataset.theme === themeName);
+                });
+            } 
+        }
 
 
         // --- Mission Handling --- (Unchanged)
@@ -786,11 +965,186 @@
         }
 
 
-        // --- Animation Loop --- (Unchanged)
-        function animate() { requestAnimationFrame(animate); const dt=clock.getDelta(); controls.update(); if(gameStarted && !isPaused && !isDemoMode){updateParticles(dt);} renderer.render(scene,camera); if(previewRenderer&&previewScene&&previewCamera){ if(previewPieceMesh && gameStarted && !isPaused){previewPieceMesh.rotation.y+=0.01;} previewRenderer.render(previewScene,previewCamera); } }
+        // --- Animation Loop --- (Updated with compass)
+        function animate() { 
+            requestAnimationFrame(animate); 
+            const dt = clock.getDelta();
+            const now = performance.now();
+            
+            controls.update(); 
+            
+            // Update compass at fixed interval
+            if (now - lastCompassUpdate > COMPASS_UPDATE_INTERVAL) {
+                updateCompass();
+                lastCompassUpdate = now;
+            }
+            
+            if(gameStarted && !isPaused && !isDemoMode){
+                updateParticles(dt);
+            } 
+            
+            renderer.render(scene, camera); 
+            
+            if(previewRenderer && previewScene && previewCamera){ 
+                if(previewPieceMesh && gameStarted && !isPaused){
+                    previewPieceMesh.rotation.y += 0.01;
+                } 
+                previewRenderer.render(previewScene, previewCamera); 
+            } 
+        }
+
+        // Compass Update Function
+        function updateCompass() {
+            if (!compassPointer) {
+                compassPointer = document.getElementById('compass-pointer');
+                if (!compassPointer) return;
+            }
+
+            // Get camera's horizontal rotation (around Y axis)
+            const cameraDirection = new THREE.Vector3();
+            camera.getWorldDirection(cameraDirection);
+            
+            // Calculate angle in degrees (0° is north/negative Z)
+            let angle = Math.atan2(cameraDirection.x, -cameraDirection.z) * (180 / Math.PI);
+            
+            // Update compass pointer rotation
+            compassPointer.style.transform = `rotate(${angle}deg)`;
+        }
 
         // --- Start the game ---
         init(); // Call init, game waits for user action via welcome/menu screens
+
+        // Landing Preview System
+        (function() {
+            function createLandingPreview() {
+                if (landingPreview) {
+                    scene.remove(landingPreview);
+                    landingPreview = null;
+                }
+                
+                if (!currentPiece || currentDifficulty !== 'easy') return;
+
+                const previewGroup = new THREE.Group();
+                const material = new THREE.MeshStandardMaterial({
+                    color: currentPiece.mesh.children[0].material.color,
+                    transparent: true,
+                    opacity: 0.3,
+                    depthWrite: false
+                });
+
+                currentPiece.shape.forEach(offset => {
+                    const mesh = new THREE.Mesh(
+                        new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE),
+                        material.clone()
+                    );
+                    mesh.position.set(
+                        offset[0] * CUBE_SIZE,
+                        offset[1] * CUBE_SIZE,
+                        offset[2] * CUBE_SIZE
+                    );
+                    previewGroup.add(mesh);
+                });
+
+                landingPreview = previewGroup;
+                scene.add(landingPreview);
+                updateLandingPreview();
+            }
+
+            function updateLandingPreview() {
+                if (!landingPreview || !currentPiece || currentDifficulty !== 'easy') return;
+
+                let finalY = currentPiece.y;
+                while (isValidMove(currentPiece.x, finalY - 1, currentPiece.z, currentPiece.shape)) {
+                    finalY--;
+                }
+
+                landingPreview.position.set(
+                    currentPiece.x * CUBE_SIZE,
+                    finalY * CUBE_SIZE,
+                    currentPiece.z * CUBE_SIZE
+                );
+                landingPreview.rotation.copy(currentPiece.mesh.rotation);
+            }
+
+            function removeLandingPreview() {
+                if (landingPreview) {
+                    scene.remove(landingPreview);
+                    landingPreview = null;
+                }
+            }
+
+            // Store original functions
+            const originalInit = window.init;
+            const originalSpawnPiece = window.spawnPiece;
+            const originalMovePiece = window.movePiece;
+            const originalRotatePiece = window.rotatePiece;
+            const originalLockPiece = window.lockPiece;
+            const originalHardDrop = window.hardDrop;
+            const originalClearBoard = window.clearBoard;
+            const originalGameOver = window.gameOver;
+
+            // Override functions with landing preview functionality
+            window.init = function() {
+                originalInit();
+                
+                // Add difficulty button listeners
+                document.querySelectorAll('.difficulty-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.difficulty-button').forEach(b => b.classList.remove('active'));
+                        button.classList.add('active');
+                        currentDifficulty = button.dataset.difficulty;
+                        if (currentDifficulty !== 'easy') {
+                            removeLandingPreview();
+                        } else if (currentPiece) {
+                            createLandingPreview();
+                        }
+                    });
+                });
+            };
+
+            window.spawnPiece = function() {
+                removeLandingPreview();
+                originalSpawnPiece();
+                if (!isGameOver && currentDifficulty === 'easy' && currentPiece) {
+                    createLandingPreview();
+                }
+            };
+
+            window.movePiece = function(dx, dy, dz, userInitiated = false) {
+                originalMovePiece(dx, dy, dz, userInitiated);
+                if (currentDifficulty === 'easy' && currentPiece) {
+                    updateLandingPreview();
+                }
+            };
+
+            window.rotatePiece = function(axis, angle) {
+                const result = originalRotatePiece(axis, angle);
+                if (result && currentDifficulty === 'easy') {
+                    updateLandingPreview();
+                }
+                return result;
+            };
+
+            window.lockPiece = function() {
+                removeLandingPreview();
+                originalLockPiece();
+            };
+
+            window.hardDrop = function() {
+                removeLandingPreview();
+                originalHardDrop();
+            };
+
+            window.clearBoard = function() {
+                removeLandingPreview();
+                originalClearBoard();
+            };
+
+            window.gameOver = function(isComplete = false) {
+                removeLandingPreview();
+                originalGameOver(isComplete);
+            };
+        })();
 
     </script>
 </body>
